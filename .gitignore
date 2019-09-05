@@ -1,0 +1,11 @@
+# Jetbrains editors
+.idea
+
+# Build
+/build
+
+# Environmental variables
+.env
+
+# Code Coverage
+/coverage*
