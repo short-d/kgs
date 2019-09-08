@@ -1,4 +1,4 @@
-module github.com/byliuyang/app-boilerplate
+module github.com/byliuyang/kgs
 
 go 1.13
 
