@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/byliuyang/app-boilerplate/dep"
 	"github.com/byliuyang/app/fw"
+	"github.com/byliuyang/kgs/dep"
 )
 
 func NewRootCmd(
