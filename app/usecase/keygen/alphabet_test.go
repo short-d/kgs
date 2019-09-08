@@ -8,7 +8,7 @@ import (
 	"github.com/byliuyang/kgs/app/entity"
 )
 
-func TestNewCharacters(t *testing.T) {
+func TestNewAlphabet(t *testing.T) {
 	testCases := []struct {
 		alphabet  []byte
 		expHasErr bool
@@ -41,7 +41,7 @@ func TestNewCharacters(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(string(testCase.alphabet), func(t *testing.T) {
-			_, err := NewCharacters(testCase.alphabet, 5)
+			_, err := NewAlphabet(testCase.alphabet, 5)
 			if testCase.expHasErr {
 				mdtest.NotEqual(t, nil, err)
 				return
@@ -51,7 +51,7 @@ func TestNewCharacters(t *testing.T) {
 	}
 }
 
-func TestCharacters_AvailableKeys(t *testing.T) {
+func TestAlphabet_AvailableKeys(t *testing.T) {
 	testCases := []struct {
 		alphabet []byte
 		keyLen   uint
@@ -111,7 +111,7 @@ func TestCharacters_AvailableKeys(t *testing.T) {
 	for _, testCase := range testCases {
 		name := fmt.Sprintf("%s %d", testCase.alphabet, testCase.keyLen)
 		t.Run(name, func(t *testing.T) {
-			chars, err := NewCharacters(testCase.alphabet, testCase.keyLen)
+			chars, err := NewAlphabet(testCase.alphabet, testCase.keyLen)
 			mdtest.Equal(t, nil, err)
 
 			availableKeys := make(chan entity.Key)
@@ -124,7 +124,7 @@ func TestCharacters_AvailableKeys(t *testing.T) {
 }
 
 func ExampleCharacters_AvailableKeys() {
-	chars, _ := NewCharacters([]byte{'a', 'b'}, 3)
+	chars, _ := NewAlphabet([]byte{'a', 'b'}, 3)
 	keyChan := make(chan entity.Key)
 	chars.AvailableKeys(keyChan)
 	keys := collectKeys(keyChan)
