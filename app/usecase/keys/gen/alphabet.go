@@ -1,4 +1,4 @@
-package keygen
+package gen
 
 import (
 	"errors"
@@ -7,23 +7,26 @@ import (
 	"github.com/byliuyang/kgs/app/usecase/unique"
 )
 
-var _ KeyGenerator = (*Alphabet)(nil)
+var _ Generator = (*Alphabet)(nil)
 
+// Alphabet represents unique key generator which generates key of length keyLen
+// using the characters in the alphabet
 type Alphabet struct {
 	alphabet []byte
 	keyLen   uint
 }
 
-func (a Alphabet) AvailableKeys(keys chan<- entity.Key) {
+// GenerateKeys generate unique keys and send them to keysOut
+func (a Alphabet) GenerateKeys(keysOut chan<- entity.Key) {
 	if a.keyLen == 0 {
-		close(keys)
+		close(keysOut)
 		return
 	}
 
 	var chars []byte
 	go func() {
-		recKey(a.alphabet, chars, a.keyLen, keys)
-		close(keys)
+		recKey(a.alphabet, chars, a.keyLen, keysOut)
+		close(keysOut)
 	}()
 }
 
@@ -41,6 +44,8 @@ func recKey(alphabet []byte, chars []byte, remaining uint, keys chan<- entity.Ke
 	}
 }
 
+// NewAlphabet creates and initialize Alphabet.
+// It returns error when  alphabet is either empty or contains duplicated characters
 func NewAlphabet(alphabet []byte, keyLen uint) (Alphabet, error) {
 	if len(alphabet) < 1 {
 		return Alphabet{}, errors.New("alphabet can't be empty")
