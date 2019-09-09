@@ -2,10 +2,10 @@
 Key generation service written in Go
 
 ## Prerequisites
-
+- go1.13
 
 ## Getting Started
-
+./bin/dev
 
 ## Contributing
 When contributing to this repository, please first discuss the change you wish to make via 
