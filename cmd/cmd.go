@@ -8,6 +8,7 @@ import (
 	"github.com/byliuyang/kgs/dep"
 )
 
+// NewRootCmd creates and initializes root command
 func NewRootCmd(
 	dbConfig fw.DBConfig,
 	dbConnector fw.DBConnector,
@@ -39,6 +40,7 @@ func NewRootCmd(
 	return rootCmd
 }
 
+// Execute runs root command
 func Execute(rootCmd fw.Command) {
 	err := rootCmd.Execute()
 	if err != nil {

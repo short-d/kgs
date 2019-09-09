@@ -1,4 +1,4 @@
-package keygen
+package gen
 
 import (
 	"fmt"
@@ -51,7 +51,7 @@ func TestNewAlphabet(t *testing.T) {
 	}
 }
 
-func TestAlphabet_AvailableKeys(t *testing.T) {
+func TestAlphabet_GenerateKeys(t *testing.T) {
 	testCases := []struct {
 		alphabet []byte
 		keyLen   uint
@@ -114,19 +114,19 @@ func TestAlphabet_AvailableKeys(t *testing.T) {
 			chars, err := NewAlphabet(testCase.alphabet, testCase.keyLen)
 			mdtest.Equal(t, nil, err)
 
-			availableKeys := make(chan entity.Key)
-			chars.AvailableKeys(availableKeys)
+			GenerateKeys := make(chan entity.Key)
+			chars.GenerateKeys(GenerateKeys)
 
-			var gotKeys = collectKeys(availableKeys)
+			var gotKeys = collectKeys(GenerateKeys)
 			mdtest.SameElements(t, testCase.expKeys, gotKeys)
 		})
 	}
 }
 
-func ExampleCharacters_AvailableKeys() {
+func ExampleCharacters_GenerateKeys() {
 	chars, _ := NewAlphabet([]byte{'a', 'b'}, 3)
 	keyChan := make(chan entity.Key)
-	chars.AvailableKeys(keyChan)
+	chars.GenerateKeys(keyChan)
 	keys := collectKeys(keyChan)
 	fmt.Println(keys)
 	// Output: [aaa aab aba abb baa bab bba bbb]
