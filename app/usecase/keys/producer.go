@@ -1,8 +1,6 @@
 package keys
 
 import (
-	"fmt"
-
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/kgs/app/entity"
 	"github.com/byliuyang/kgs/app/usecase/keys/gen"
@@ -22,11 +20,10 @@ func (p Producer) Produce() {
 	p.keyGen.GenerateKeys(keys)
 
 	for key := range keys {
-		key, err := p.repo.Create(key)
+		err := p.repo.Create(key)
 		if err != nil {
 			p.logger.Error(err)
-		} else {
-			p.logger.Info(fmt.Sprintf("Saved %v", key))
+			continue
 		}
 	}
 }

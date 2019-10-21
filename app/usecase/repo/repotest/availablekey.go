@@ -14,12 +14,20 @@ type AvailableKeyFake struct {
 	keys map[entity.Key]bool
 }
 
-func (k *AvailableKeyFake) Create(key entity.Key) (entity.Key, error) {
+func (k *AvailableKeyFake) Create(key entity.Key) error {
 	if _, ok := k.keys[key]; ok {
-		return "", errors.New(fmt.Sprintf("key exists: %s", string(key)))
+		return errors.New(fmt.Sprintf("key exists: %s", string(key)))
 	}
 	k.keys[key] = true
-	return key, nil
+	return nil
+}
+
+func (k *AvailableKeyFake) RetrieveInBatch(maxCount int) ([]entity.Key, error) {
+	panic("implement me")
+}
+
+func (k *AvailableKeyFake) DeleteInBatch(keys []entity.Key) error {
+	panic("implement me")
 }
 
 func (k AvailableKeyFake) GetKeys() []entity.Key {
