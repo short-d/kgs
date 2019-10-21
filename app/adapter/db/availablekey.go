@@ -109,6 +109,7 @@ WHERE %s='$1';
 	return tx.Commit()
 }
 
+// NewAvailableKeySQL creates AvailableKeySQL
 func NewAvailableKeySQL(db *sql.DB) AvailableKeySQL {
 	return AvailableKeySQL{db:db}
 }
