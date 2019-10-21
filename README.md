@@ -2,10 +2,16 @@
 Key generation service written in Go
 
 ## Prerequisites
-- go1.13
+- go v1.13
+- grpc v1.24.0
+- protoc-gen-go v1.3.2
+- protobuf v3.10.0
 
 ## Getting Started
-./bin/dev
+```bash
+./scripts/grpc
+./scripts/dev
+```
 
 ## Contributing
 When contributing to this repository, please first discuss the change you wish to make via 

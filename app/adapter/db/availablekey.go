@@ -3,10 +3,11 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"time"
+
 	"github.com/byliuyang/kgs/app/adapter/db/table"
 	"github.com/byliuyang/kgs/app/entity"
 	"github.com/byliuyang/kgs/app/usecase/repo"
-	"time"
 )
 
 var _ repo.AvailableKey = (*AvailableKeySQL)(nil)
@@ -28,7 +29,7 @@ VALUES ($1, $2)
 	)
 
 	now := time.Now()
-	_, err := a.db.Exec(statement, statement, key, now)
+	_, err := a.db.Exec(statement, key, now)
 	return err
 }
 
@@ -111,5 +112,5 @@ WHERE %s='$1';
 
 // NewAvailableKeySQL creates AvailableKeySQL
 func NewAvailableKeySQL(db *sql.DB) AvailableKeySQL {
-	return AvailableKeySQL{db:db}
+	return AvailableKeySQL{db: db}
 }

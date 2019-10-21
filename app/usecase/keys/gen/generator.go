@@ -4,5 +4,5 @@ import "github.com/byliuyang/kgs/app/entity"
 
 // Generator represents unique key generator
 type Generator interface {
-	GenerateKeys(keysOut chan<- entity.Key)
+	GenerateKeys(keySize uint, keysOut chan<- entity.Key)
 }
