@@ -1,4 +1,4 @@
-package keys
+package producer
 
 import (
 	"errors"

@@ -6,9 +6,20 @@
 package dep
 
 import (
+	"database/sql"
+
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/app/modern/mdcli"
 	"github.com/byliuyang/app/modern/mddb"
+	"github.com/byliuyang/app/modern/mdgrpc"
+	"github.com/byliuyang/app/modern/mdlogger"
+	"github.com/byliuyang/app/modern/mdservice"
+	"github.com/byliuyang/app/modern/mdtracer"
+	"github.com/byliuyang/kgs/app/adapter/db"
+	"github.com/byliuyang/kgs/app/adapter/rpc"
+	"github.com/byliuyang/kgs/app/usecase/keys/gen"
+	"github.com/byliuyang/kgs/app/usecase/keys/producer"
+	"github.com/google/wire"
 )
 
 // Injectors from wire.go:
@@ -27,3 +38,23 @@ func InjectDBMigrationTool() fw.DBMigrationTool {
 	postgresMigrationTool := mddb.NewPostgresMigrationTool()
 	return postgresMigrationTool
 }
+
+func InjectGRpcService(name string, sqlDB *sql.DB) (mdservice.Service, error) {
+	availableKeySQL := db.NewAvailableKeySQL(sqlDB)
+	v := gen.NewBase62()
+	alphabet, err := gen.NewAlphabet(v)
+	if err != nil {
+		return mdservice.Service{}, err
+	}
+	logger := mdlogger.NewLocal()
+	persist := producer.NewPersist(availableKeySQL, alphabet, logger)
+	keyGenController := rpc.NewKeyGenController(persist)
+	kgsAPI := rpc.NewKgsAPI(keyGenController)
+	gRpc := mdgrpc.NewGRpc(kgsAPI)
+	service := mdservice.New(name, gRpc, logger)
+	return service, nil
+}
+
+// wire.go:
+
+var observabilitySet = wire.NewSet(mdlogger.NewLocal, mdtracer.NewLocal)

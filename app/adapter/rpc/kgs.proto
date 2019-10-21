@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package rpc;
+
+import "google/protobuf/empty.proto";
+
+service KeyGen {
+    rpc PopulateKeys (PopulateKeysRequest) returns (google.protobuf.Empty);
+}
+
+message PopulateKeysRequest {
+    uint32 key_size = 1;
+}
+
+message PopulateKeysResponse{
+}

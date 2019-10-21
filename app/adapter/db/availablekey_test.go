@@ -4,10 +4,11 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
+	"testing"
+
 	"github.com/byliuyang/app/mdtest"
 	"github.com/byliuyang/kgs/app/adapter/db/table"
 	"github.com/byliuyang/kgs/app/entity"
-	"testing"
 )
 
 func TestAvailableKeySQL_Create(t *testing.T) {
