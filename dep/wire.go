@@ -8,6 +8,7 @@ import (
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/app/modern/mdcli"
 	"github.com/byliuyang/app/modern/mddb"
+	"github.com/byliuyang/app/modern/mdenv"
 	"github.com/byliuyang/app/modern/mdgrpc"
 	"github.com/byliuyang/app/modern/mdlogger"
 	"github.com/byliuyang/app/modern/mdservice"
@@ -20,7 +21,7 @@ import (
 	"github.com/google/wire"
 )
 
-func InjectCommandFactory() fw.CommandFactory {
+func InitCommandFactory() fw.CommandFactory {
 	wire.Build(
 		wire.Bind(new(fw.CommandFactory), new(mdcli.CobraFactory)),
 		mdcli.NewCobraFactory,
@@ -28,7 +29,7 @@ func InjectCommandFactory() fw.CommandFactory {
 	return mdcli.CobraFactory{}
 }
 
-func InjectDBConnector() fw.DBConnector {
+func InitDBConnector() fw.DBConnector {
 	wire.Build(
 		wire.Bind(new(fw.DBConnector), new(mddb.PostgresConnector)),
 		mddb.NewPostgresConnector,
@@ -36,7 +37,7 @@ func InjectDBConnector() fw.DBConnector {
 	return mddb.PostgresConnector{}
 }
 
-func InjectDBMigrationTool() fw.DBMigrationTool {
+func InitDBMigrationTool() fw.DBMigrationTool {
 	wire.Build(
 		wire.Bind(new(fw.DBMigrationTool), new(mddb.PostgresMigrationTool)),
 		mddb.NewPostgresMigrationTool,
@@ -44,14 +45,24 @@ func InjectDBMigrationTool() fw.DBMigrationTool {
 	return mddb.PostgresMigrationTool{}
 }
 
+func InitEnvironment() fw.Environment {
+	wire.Build(
+		wire.Bind(new(fw.Environment), new(mdenv.GoDotEnv)),
+
+		mdenv.NewGoDotEnv,
+	)
+	return mdenv.GoDotEnv{}
+}
+
 var observabilitySet = wire.NewSet(
 	mdlogger.NewLocal,
 	mdtracer.NewLocal,
 )
 
-func InjectGRpcService(
+func InitGRpcService(
 	name string,
 	sqlDB *sql.DB,
+	securityPolicy fw.SecurityPolicy,
 ) (mdservice.Service, error) {
 	wire.Build(
 		wire.Bind(new(fw.Server), new(mdgrpc.GRpc)),
