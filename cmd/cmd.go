@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/byliuyang/kgs/app"
+
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/kgs/dep"
 )
@@ -13,15 +15,24 @@ func NewRootCmd(
 	dbConfig fw.DBConfig,
 	dbConnector fw.DBConnector,
 	dbMigrationTool fw.DBMigrationTool,
+	securityPolicy fw.SecurityPolicy,
+	gRpcAPIPort int,
 ) fw.Command {
 	var migrationRoot string
 
-	cmdFactory := dep.InjectCommandFactory()
+	cmdFactory := dep.InitCommandFactory()
 	startCmd := cmdFactory.NewCommand(
 		fw.CommandConfig{
 			Usage: "start",
 			OnExecute: func(cmd *fw.Command, args []string) {
-				start(dbConfig, migrationRoot, dbConnector, dbMigrationTool)
+				app.Start(
+					dbConfig,
+					migrationRoot,
+					dbConnector,
+					dbMigrationTool,
+					securityPolicy,
+					gRpcAPIPort,
+				)
 			},
 		},
 	)

@@ -1,15 +1,17 @@
-package cmd
+package app
 
 import (
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/kgs/dep"
 )
 
-func start(
+func Start(
 	dbConfig fw.DBConfig,
 	migrationRoot string,
 	dbConnector fw.DBConnector,
 	dbMigrationTool fw.DBMigrationTool,
+	securityPolicy fw.SecurityPolicy,
+	gRpcAPIPort int,
 ) {
 	db, err := dbConnector.Connect(dbConfig)
 	if err != nil {
@@ -21,9 +23,9 @@ func start(
 		panic(err)
 	}
 
-	gRpcService, err := dep.InjectGRpcService("Kgs", db)
+	gRpcService, err := dep.InitGRpcService("Kgs", db, securityPolicy)
 	if err != nil {
 		panic(err)
 	}
-	gRpcService.StartAndWait(8080)
+	gRpcService.StartAndWait(gRpcAPIPort)
 }

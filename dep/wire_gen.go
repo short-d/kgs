@@ -11,6 +11,7 @@ import (
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/app/modern/mdcli"
 	"github.com/byliuyang/app/modern/mddb"
+	"github.com/byliuyang/app/modern/mdenv"
 	"github.com/byliuyang/app/modern/mdgrpc"
 	"github.com/byliuyang/app/modern/mdlogger"
 	"github.com/byliuyang/app/modern/mdservice"
@@ -24,22 +25,27 @@ import (
 
 // Injectors from wire.go:
 
-func InjectCommandFactory() fw.CommandFactory {
+func InitCommandFactory() fw.CommandFactory {
 	cobraFactory := mdcli.NewCobraFactory()
 	return cobraFactory
 }
 
-func InjectDBConnector() fw.DBConnector {
+func InitDBConnector() fw.DBConnector {
 	postgresConnector := mddb.NewPostgresConnector()
 	return postgresConnector
 }
 
-func InjectDBMigrationTool() fw.DBMigrationTool {
+func InitDBMigrationTool() fw.DBMigrationTool {
 	postgresMigrationTool := mddb.NewPostgresMigrationTool()
 	return postgresMigrationTool
 }
 
-func InjectGRpcService(name string, sqlDB *sql.DB) (mdservice.Service, error) {
+func InitEnvironment() fw.Environment {
+	goDotEnv := mdenv.NewGoDotEnv()
+	return goDotEnv
+}
+
+func InitGRpcService(name string, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy) (mdservice.Service, error) {
 	availableKeySQL := db.NewAvailableKeySQL(sqlDB)
 	v := gen.NewBase62()
 	alphabet, err := gen.NewAlphabet(v)
@@ -50,7 +56,10 @@ func InjectGRpcService(name string, sqlDB *sql.DB) (mdservice.Service, error) {
 	persist := producer.NewPersist(availableKeySQL, alphabet, logger)
 	keyGenController := rpc.NewKeyGenController(persist)
 	kgsAPI := rpc.NewKgsAPI(keyGenController)
-	gRpc := mdgrpc.NewGRpc(kgsAPI)
+	gRpc, err := mdgrpc.NewGRpc(kgsAPI, securityPolicy)
+	if err != nil {
+		return mdservice.Service{}, err
+	}
 	service := mdservice.New(name, gRpc, logger)
 	return service, nil
 }

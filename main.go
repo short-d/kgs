@@ -1,7 +1,6 @@
 package main
 
 import (
-	"os"
 	"strconv"
 
 	"github.com/byliuyang/app/fw"
@@ -10,12 +9,21 @@ import (
 )
 
 func main() {
-	host := getEnv("DB_HOST", "localhost")
-	portStr := getEnv("DB_PORT", "5432")
-	port := mustInt(portStr)
-	user := getEnv("DB_USER", "postgres")
-	password := getEnv("DB_PASSWORD", "password")
-	dbName := getEnv("DB_NAME", "kgs")
+	env := dep.InitEnvironment()
+	env.AutoLoadDotEnvFile()
+
+	host := env.GetEnv("DB_HOST", "localhost")
+	port := mustInt(env.GetEnv("DB_PORT", "5432"))
+	user := env.GetEnv("DB_USER", "postgres")
+	password := env.GetEnv("DB_PASSWORD", "password")
+	dbName := env.GetEnv("DB_NAME", "kgs")
+
+	isEncryptionEnabled := mustBool(env.GetEnv("ENABLE_ENCRYPTION", ""))
+
+	certFilePath := env.GetEnv("CERT_FILE_PATH", "")
+	keyFilePath := env.GetEnv("KEY_FILE_PATH", "")
+
+	gRpcAPIPort := mustInt(env.GetEnv("GRPC_API_PORT", "8080"))
 
 	dbConfig := fw.DBConfig{
 		Host:     host,
@@ -24,29 +32,37 @@ func main() {
 		Password: password,
 		DbName:   dbName,
 	}
-	dbConnector := dep.InjectDBConnector()
-	dbMigrationTool := dep.InjectDBMigrationTool()
+	dbConnector := dep.InitDBConnector()
+	dbMigrationTool := dep.InitDBMigrationTool()
 
-	rootCmd := cmd.NewRootCmd(dbConfig, dbConnector, dbMigrationTool)
-	cmd.Execute(rootCmd)
-}
-
-func getEnv(varName string, defaultVal string) string {
-	val := os.Getenv(varName)
-
-	if val == "" {
-		return defaultVal
+	securityPolicy := fw.SecurityPolicy{
+		IsEncrypted:         isEncryptionEnabled,
+		CertificateFilePath: certFilePath,
+		KeyFilePath:         keyFilePath,
 	}
 
-	return val
+	rootCmd := cmd.NewRootCmd(
+		dbConfig,
+		dbConnector,
+		dbMigrationTool,
+		securityPolicy,
+		gRpcAPIPort,
+	)
+	cmd.Execute(rootCmd)
 }
 
 func mustInt(numStr string) int {
 	num, err := strconv.Atoi(numStr)
-
 	if err != nil {
 		panic(err)
 	}
-
 	return num
+}
+
+func mustBool(boolStr string) bool {
+	boolean, err := strconv.ParseBool(boolStr)
+	if err != nil {
+		panic(err)
+	}
+	return boolean
 }

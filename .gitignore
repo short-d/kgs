@@ -9,3 +9,6 @@
 
 # Code Coverage
 /coverage*
+
+# Credentials
+certs
