@@ -11,7 +11,7 @@ type GeneratorStub struct {
 	keys []entity.Key
 }
 
-func (g GeneratorStub) GenerateKeys(keysOut chan<- entity.Key) {
+func (g GeneratorStub) GenerateKeys(keySize uint, keysOut chan<- entity.Key) {
 	go func() {
 		for _, key := range g.keys {
 			keysOut <- key
