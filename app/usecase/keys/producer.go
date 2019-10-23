@@ -1,4 +1,4 @@
-package producer
+package keys
 
 import (
 	"github.com/byliuyang/app/fw"
@@ -7,38 +7,41 @@ import (
 	"github.com/byliuyang/kgs/app/usecase/repo"
 )
 
-var _ Producer = (*Persist)(nil)
+type Producer interface {
+	Produce(KeyLength uint) error
+}
+
+var _ Producer = (*ProducerPersist)(nil)
 
 // Producer represents persistent key producer
-type Persist struct {
+type ProducerPersist struct {
 	logger fw.Logger
 	repo   repo.AvailableKey
 	keyGen gen.Generator
 }
 
 // Produce generates unique keys and store them in the repository
-func (p Persist) Produce(keySize uint) {
+func (p ProducerPersist) Produce(KeyLength uint) error {
 	keys := make(chan entity.Key)
 
-	p.keyGen.GenerateKeys(keySize, keys)
-
+	p.keyGen.GenerateKeys(KeyLength, keys)
 	for key := range keys {
 		p.logger.Info(string(key))
 		err := p.repo.Create(key)
 		if err != nil {
-			p.logger.Error(err)
-			return
+			return err
 		}
 	}
+	return nil
 }
 
 // NewProducer creates and initializes Producer
-func NewPersist(
+func NewProducerPersist(
 	repo repo.AvailableKey,
 	keyGen gen.Generator,
 	logger fw.Logger,
-) Persist {
-	return Persist{
+) ProducerPersist {
+	return ProducerPersist{
 		repo:   repo,
 		keyGen: keyGen,
 		logger: logger,
