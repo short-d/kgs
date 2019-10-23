@@ -3,10 +3,11 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"time"
+
 	"github.com/byliuyang/kgs/app/adapter/db/table"
 	"github.com/byliuyang/kgs/app/entity"
 	"github.com/byliuyang/kgs/app/usecase/repo"
-	"time"
 )
 
 var _ repo.AllocatedKey = (*AllocatedKeySQL)(nil)

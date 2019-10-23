@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/kgs/app/usecase/keys"
 	"github.com/golang/protobuf/ptypes/empty"
@@ -12,7 +13,7 @@ var _ KeyGenServer = (*KeyGenController)(nil)
 type KeyGenController struct {
 	producer keys.Producer
 	consumer keys.Consumer
-	logger fw.Logger
+	logger   fw.Logger
 }
 
 func (k KeyGenController) AllocateKeys(
@@ -47,6 +48,6 @@ func NewKeyGenController(
 	return KeyGenController{
 		producer: producer,
 		consumer: consumer,
-		logger: logger,
+		logger:   logger,
 	}
 }

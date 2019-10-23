@@ -1,8 +1,9 @@
 package keys
 
 import (
-	"github.com/byliuyang/kgs/app/usecase/repo"
 	"sync"
+
+	"github.com/byliuyang/kgs/app/usecase/repo"
 )
 
 type Consumer interface {
@@ -12,7 +13,7 @@ type Consumer interface {
 var _ Consumer = (*ConsumerPersist)(nil)
 
 type ConsumerPersist struct {
-	mutex *sync.Mutex
+	mutex            *sync.Mutex
 	availableKeyRepo repo.AvailableKey
 	allocatedKeyRepo repo.AllocatedKey
 }
