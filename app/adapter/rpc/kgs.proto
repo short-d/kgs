@@ -6,11 +6,17 @@ import "google/protobuf/empty.proto";
 
 service KeyGen {
     rpc PopulateKeys (PopulateKeysRequest) returns (google.protobuf.Empty);
+    rpc AllocateKeys (AllocateKeysRequest) returns (AllocateKeysResponse);
 }
 
 message PopulateKeysRequest {
-    uint32 key_size = 1;
+    uint32 key_length = 1;
 }
 
-message PopulateKeysResponse{
+message AllocateKeysRequest {
+    uint32 max_key_count = 1;
+}
+
+message AllocateKeysResponse {
+    repeated string keys = 1;
 }
