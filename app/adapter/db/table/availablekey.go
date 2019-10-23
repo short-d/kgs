@@ -1,6 +1,6 @@
 package table
 
-// AvailableKey represents available_key database table
+// AvailableKey represents available_key table in the database
 var AvailableKey = struct {
 	TableName       string
 	ColumnKey       string

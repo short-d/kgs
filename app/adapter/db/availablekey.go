@@ -21,7 +21,7 @@ type AvailableKeySQL struct {
 func (a AvailableKeySQL) Create(key entity.Key) error {
 	statement := fmt.Sprintf(`
 INSERT INTO "%s" ("%s", "%s")
-VALUES ($1, $2)
+VALUES ($1, $2);
 `,
 		table.AvailableKey.TableName,
 		table.AvailableKey.ColumnKey,
@@ -34,16 +34,15 @@ VALUES ($1, $2)
 }
 
 // RetrieveInBatch fetches maxCount of keys from available_key table.
-func (a AvailableKeySQL) RetrieveInBatch(maxCount int) ([]entity.Key, error) {
+func (a AvailableKeySQL) RetrieveInBatch(maxCount uint) ([]entity.Key, error) {
 	query := fmt.Sprintf(`
-SELECT "%s", "%s"
+SELECT "%s"
 FROM "%s"
 ORDER BY
-%s
+"%s"
 LIMIT $1
 `,
 		table.AvailableKey.ColumnKey,
-		table.AvailableKey.ColumnCreatedAt,
 		table.AvailableKey.TableName,
 		table.AvailableKey.ColumnKey,
 	)
@@ -51,6 +50,7 @@ LIMIT $1
 	if err != nil {
 		return nil, err
 	}
+
 	defer rows.Close()
 	keys := make([]entity.Key, 0)
 
@@ -88,8 +88,8 @@ func (a AvailableKeySQL) DeleteInBatch(keys []entity.Key) error {
 
 	statement, err := tx.Prepare(
 		fmt.Sprintf(`
-DELETE FROM %s
-WHERE %s='$1';
+DELETE FROM "%s"
+WHERE "%s"=$1;
 `,
 			table.AvailableKey.TableName,
 			table.AvailableKey.ColumnKey),
