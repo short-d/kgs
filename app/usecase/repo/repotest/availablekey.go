@@ -3,7 +3,6 @@ package repotest
 import (
 	"errors"
 	"fmt"
-
 	"github.com/byliuyang/kgs/app/entity"
 	"github.com/byliuyang/kgs/app/usecase/repo"
 )
@@ -14,19 +13,19 @@ type AvailableKeyFake struct {
 	keys map[entity.Key]bool
 }
 
-func (k *AvailableKeyFake) Create(key entity.Key) error {
-	if _, ok := k.keys[key]; ok {
+func (a AvailableKeyFake) Create(key entity.Key) error {
+	if _, ok := a.keys[key]; ok {
 		return errors.New(fmt.Sprintf("key exists: %s", string(key)))
 	}
-	k.keys[key] = true
+	a.keys[key] = true
 	return nil
 }
 
-func (k *AvailableKeyFake) RetrieveInBatch(maxCount int) ([]entity.Key, error) {
+func (a AvailableKeyFake) RetrieveInBatch(maxCount uint) ([]entity.Key, error) {
 	panic("implement me")
 }
 
-func (k *AvailableKeyFake) DeleteInBatch(keys []entity.Key) error {
+func (a AvailableKeyFake) DeleteInBatch(keys []entity.Key) error {
 	panic("implement me")
 }
 
