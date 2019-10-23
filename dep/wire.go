@@ -15,8 +15,8 @@ import (
 	"github.com/byliuyang/app/modern/mdtracer"
 	"github.com/byliuyang/kgs/app/adapter/db"
 	"github.com/byliuyang/kgs/app/adapter/rpc"
+	"github.com/byliuyang/kgs/app/usecase/keys"
 	"github.com/byliuyang/kgs/app/usecase/keys/gen"
-	"github.com/byliuyang/kgs/app/usecase/keys/producer"
 	"github.com/byliuyang/kgs/app/usecase/repo"
 	"github.com/google/wire"
 )
@@ -68,9 +68,11 @@ func InitGRpcService(
 		wire.Bind(new(fw.Server), new(mdgrpc.GRpc)),
 		wire.Bind(new(fw.GRpcAPI), new(rpc.KgsAPI)),
 		wire.Bind(new(rpc.KeyGenServer), new(rpc.KeyGenController)),
-		wire.Bind(new(producer.Producer), new(producer.Persist)),
+		wire.Bind(new(keys.Producer), new(keys.ProducerPersist)),
+		wire.Bind(new(keys.Consumer), new(keys.ConsumerPersist)),
 		wire.Bind(new(gen.Generator), new(gen.Alphabet)),
 		wire.Bind(new(repo.AvailableKey), new(db.AvailableKeySQL)),
+		wire.Bind(new(repo.AllocatedKey), new(db.AllocatedKeySQL)),
 
 		observabilitySet,
 
@@ -79,8 +81,10 @@ func InitGRpcService(
 
 		rpc.NewKeyGenController,
 		rpc.NewKgsAPI,
-		producer.NewPersist,
+		keys.NewProducerPersist,
+		keys.NewConsumerPersist,
 		db.NewAvailableKeySQL,
+		db.NewAllocatedKeySQL,
 		gen.NewAlphabet,
 		gen.NewBase62,
 	)

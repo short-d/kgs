@@ -18,8 +18,8 @@ import (
 	"github.com/byliuyang/app/modern/mdtracer"
 	"github.com/byliuyang/kgs/app/adapter/db"
 	"github.com/byliuyang/kgs/app/adapter/rpc"
+	"github.com/byliuyang/kgs/app/usecase/keys"
 	"github.com/byliuyang/kgs/app/usecase/keys/gen"
-	"github.com/byliuyang/kgs/app/usecase/keys/producer"
 	"github.com/google/wire"
 )
 
@@ -53,8 +53,10 @@ func InitGRpcService(name string, sqlDB *sql.DB, securityPolicy fw.SecurityPolic
 		return mdservice.Service{}, err
 	}
 	logger := mdlogger.NewLocal()
-	persist := producer.NewPersist(availableKeySQL, alphabet, logger)
-	keyGenController := rpc.NewKeyGenController(persist)
+	producerPersist := keys.NewProducerPersist(availableKeySQL, alphabet, logger)
+	allocatedKeySQL := db.NewAllocatedKeySQL(sqlDB)
+	consumerPersist := keys.NewConsumerPersist(availableKeySQL, allocatedKeySQL)
+	keyGenController := rpc.NewKeyGenController(producerPersist, consumerPersist, logger)
 	kgsAPI := rpc.NewKgsAPI(keyGenController)
 	gRpc, err := mdgrpc.NewGRpc(kgsAPI, securityPolicy)
 	if err != nil {
