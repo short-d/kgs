@@ -41,7 +41,7 @@ func TestNewAlphabet(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(string(testCase.alphabet), func(t *testing.T) {
-			_, err := NewAlphabet(testCase.alphabet, 5)
+			_, err := NewAlphabet(testCase.alphabet)
 			if testCase.expHasErr {
 				mdtest.NotEqual(t, nil, err)
 				return
@@ -111,11 +111,11 @@ func TestAlphabet_GenerateKeys(t *testing.T) {
 	for _, testCase := range testCases {
 		name := fmt.Sprintf("%s %d", testCase.alphabet, testCase.keyLen)
 		t.Run(name, func(t *testing.T) {
-			chars, err := NewAlphabet(testCase.alphabet, testCase.keyLen)
+			chars, err := NewAlphabet(testCase.alphabet)
 			mdtest.Equal(t, nil, err)
 
 			GenerateKeys := make(chan entity.Key)
-			chars.GenerateKeys(GenerateKeys)
+			chars.GenerateKeys(testCase.keyLen, GenerateKeys)
 
 			var gotKeys = collectKeys(GenerateKeys)
 			mdtest.SameElements(t, testCase.expKeys, gotKeys)
@@ -124,9 +124,9 @@ func TestAlphabet_GenerateKeys(t *testing.T) {
 }
 
 func ExampleCharacters_GenerateKeys() {
-	chars, _ := NewAlphabet([]byte{'a', 'b'}, 3)
+	chars, _ := NewAlphabet([]byte{'a', 'b'})
 	keyChan := make(chan entity.Key)
-	chars.GenerateKeys(keyChan)
+	chars.GenerateKeys(3, keyChan)
 	keys := collectKeys(keyChan)
 	fmt.Println(keys)
 	// Output: [aaa aab aba abb baa bab bba bbb]

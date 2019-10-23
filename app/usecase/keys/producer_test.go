@@ -1,7 +1,6 @@
-package producer
+package keys
 
 import (
-	"errors"
 	"fmt"
 	"testing"
 
@@ -13,10 +12,10 @@ import (
 
 func TestProducer_Produce(t *testing.T) {
 	testCases := []struct {
-		name      string
-		keys      []entity.Key
-		expErrors []error
-		expKeys   []entity.Key
+		name    string
+		keys    []entity.Key
+		hasErr  bool
+		expKeys []entity.Key
 	}{
 		{
 			name: "unique keys",
@@ -25,7 +24,7 @@ func TestProducer_Produce(t *testing.T) {
 				"bc",
 				"ac",
 			},
-			expErrors: []error{},
+			hasErr: false,
 			expKeys: []entity.Key{
 				"ab",
 				"bc",
@@ -41,14 +40,10 @@ func TestProducer_Produce(t *testing.T) {
 				"bc",
 				"cd",
 			},
-			expErrors: []error{
-				errors.New("key exists: ab"),
-				errors.New("key exists: bc"),
-			},
+			hasErr: true,
 			expKeys: []entity.Key{
 				"ab",
 				"bc",
-				"cd",
 			},
 		},
 	}
@@ -58,10 +53,14 @@ func TestProducer_Produce(t *testing.T) {
 			repo := repotest.NewAvailableKeyFake()
 			gen := gentest.NewGeneratorStub(testCase.keys)
 			logger := mdtest.NewLoggerFake()
-			producer := NewProducer(&repo, gen, &logger)
-			producer.Produce()
+			producer := NewProducerPersist(repo, gen, &logger)
+			err := producer.Produce(uint(len(testCase.expKeys)))
 
-			mdtest.SameElements(t, testCase.expErrors, logger.Errors)
+			if testCase.hasErr {
+				mdtest.NotEqual(t, nil, err)
+			} else {
+				mdtest.Equal(t, nil, err)
+			}
 			mdtest.SameElements(t, testCase.expKeys, repo.GetKeys())
 		})
 	}
@@ -78,12 +77,12 @@ func ExampleProducer_Produce() {
 			"cd",
 		})
 	logger := mdtest.NewLoggerFake()
-	producer := NewProducer(&repo, gen, &logger)
-	producer.Produce()
+	producer := NewProducerPersist(&repo, gen, &logger)
+	err := producer.Produce(1)
 
-	fmt.Println(logger.Errors)
+	fmt.Println(err)
 	fmt.Println(repo.GetKeys())
 	// Output:
-	// [key exists: ab key exists: bc]
-	// [ab bc cd]
+	// key exists: ab
+	// [ab bc]
 }
