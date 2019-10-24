@@ -2,6 +2,12 @@ package rpc
 
 import (
 	"context"
+	"time"
+
+	"github.com/byliuyang/kgs/app/adapter/message"
+	"github.com/byliuyang/kgs/app/adapter/template"
+	"github.com/byliuyang/kgs/app/entity"
+	"github.com/byliuyang/kgs/app/usecase/notification"
 
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/kgs/app/usecase/keys"
@@ -13,6 +19,8 @@ var _ KeyGenServer = (*KeyGenController)(nil)
 type KeyGenController struct {
 	producer keys.Producer
 	consumer keys.Consumer
+	notifier notification.Notifier
+	template template.Template
 	logger   fw.Logger
 }
 
@@ -32,10 +40,32 @@ func (k KeyGenController) PopulateKeys(
 	req *PopulateKeysRequest,
 ) (*empty.Empty, error) {
 	go func() {
+		startAt := time.Now()
+		k.logger.Info("Start populating keys")
 		err := k.producer.Produce(uint(req.KeyLength))
 		if err != nil {
 			k.logger.Error(err)
+			return
 		}
+
+		timeElapsed := time.Now().Sub(startAt)
+		msg, err := message.NewKeyGenSucceedMessage(k.template, timeElapsed)
+		if err != nil {
+			k.logger.Error(err)
+			return
+		}
+
+		requester := entity.Requester{
+			Name:  "",
+			Email: req.RequesterEmail,
+		}
+
+		err = k.notifier.NotifyRequester(msg, requester)
+		if err != nil {
+			k.logger.Error(err)
+			return
+		}
+		k.logger.Info("Finish populating keys")
 	}()
 	return &empty.Empty{}, nil
 }
@@ -43,11 +73,15 @@ func (k KeyGenController) PopulateKeys(
 func NewKeyGenController(
 	producer keys.Producer,
 	consumer keys.Consumer,
+	notifier notification.Notifier,
+	template template.Template,
 	logger fw.Logger,
 ) KeyGenController {
 	return KeyGenController{
 		producer: producer,
 		consumer: consumer,
+		notifier: notifier,
+		template: template,
 		logger:   logger,
 	}
 }

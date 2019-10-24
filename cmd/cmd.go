@@ -12,11 +12,11 @@ import (
 
 // NewRootCmd creates and initializes root command
 func NewRootCmd(
+	config app.Config,
 	dbConfig fw.DBConfig,
 	dbConnector fw.DBConnector,
 	dbMigrationTool fw.DBMigrationTool,
 	securityPolicy fw.SecurityPolicy,
-	gRpcAPIPort int,
 ) fw.Command {
 	var migrationRoot string
 
@@ -26,12 +26,11 @@ func NewRootCmd(
 			Usage: "start",
 			OnExecute: func(cmd *fw.Command, args []string) {
 				app.Start(
+					config,
 					dbConfig,
-					migrationRoot,
 					dbConnector,
 					dbMigrationTool,
 					securityPolicy,
-					gRpcAPIPort,
 				)
 			},
 		},

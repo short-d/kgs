@@ -3,7 +3,7 @@ module github.com/byliuyang/kgs
 go 1.13
 
 require (
-	github.com/byliuyang/app v0.0.0-20191022071012-181ba2c6f42d
+	github.com/byliuyang/app v0.0.0-20191024060854-d8cf27126b93
 	github.com/golang/protobuf v1.3.2
 	github.com/google/wire v0.3.0
 	golang.org/x/net v0.0.0-20191014212845-da9a3fd4c582 // indirect

@@ -3,8 +3,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/DATA-DOG/go-sqlmock v1.3.3 h1:CWUqKXe0s8A2z6qCgkP4Kru7wC11YoAnoupUKFDnH08=
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
-github.com/byliuyang/app v0.0.0-20191022071012-181ba2c6f42d h1:sGaXo2O6ugR8W48YiIoUo6LK+YFRhuwDvr0haR8pJZs=
-github.com/byliuyang/app v0.0.0-20191022071012-181ba2c6f42d/go.mod h1:Ie9ARCEN/GnKvlHqWZhN1WMGVghc62O/s+XaXTh38hg=
+github.com/byliuyang/app v0.0.0-20191024060854-d8cf27126b93 h1:qktuC2Yzrj191H0WVyHR9QGNt8hbgYhLtbAbvvkmjfQ=
+github.com/byliuyang/app v0.0.0-20191024060854-d8cf27126b93/go.mod h1:OJ0/WF8zHkTL3Aa9Jdx9/OHacCCSV0T7TieOuHsmmDY=
 github.com/byliuyang/eventbus v0.0.0-20190905025612-ee6985030d5b h1:CsSf45Xu8cy75ItXfN6WSke/0GTQeiOxDHRsABtOYzw=
 github.com/byliuyang/eventbus v0.0.0-20190905025612-ee6985030d5b/go.mod h1:r0/JGVFQObWPCDGD5J+UU9W8eqnnEzhfFUtxsfLAhLg=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
@@ -77,6 +77,10 @@ github.com/rubenv/sql-migrate v0.0.0-20190902133344-8926f37f0bc1/go.mod h1:WS0rl
 github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR/rfWxYHBV53g=
 github.com/satori/go.uuid v1.2.0 h1:0uYX9dsZ2yD7q2RtLRtPSdGDWzjeM3TbMJP9utgA0ww=
 github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
+github.com/sendgrid/rest v2.4.1+incompatible h1:HDib/5xzQREPq34lN3YMhQtMkdXxS/qLp5G3k9a5++4=
+github.com/sendgrid/rest v2.4.1+incompatible/go.mod h1:kXX7q3jZtJXK5c5qK83bSGMdV6tsOE70KbHoqJls4lE=
+github.com/sendgrid/sendgrid-go v3.5.0+incompatible h1:kosbgHyNVYVaqECDYvFVLVD9nvThweBd6xp7vaCT3GI=
+github.com/sendgrid/sendgrid-go v3.5.0+incompatible/go.mod h1:QRQt+LX/NmgVEvmdRw0VT/QgUn499+iza2FnDca9fg8=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/spf13/afero v1.1.2/go.mod h1:j4pytiNVoe2o6bmDsKpLACNPDBIoEAkihy7loJ1B0CQ=
 github.com/spf13/cast v1.3.0/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=

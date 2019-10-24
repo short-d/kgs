@@ -11,6 +11,7 @@ service KeyGen {
 
 message PopulateKeysRequest {
     uint32 key_length = 1;
+    string requester_email = 2;
 }
 
 message AllocateKeysRequest {
