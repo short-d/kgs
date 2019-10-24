@@ -106,6 +106,10 @@ steps:
         from_secret: CERT_FILE_PATH
       KEY_FILE_PATH:
         from_secret: KEY_FILE_PATH
+      HOST_CERT_FILE_PATH:
+        from_secret: HOST_CERT_FILE_PATH
+      HOST_KEY_FILE_PATH:
+        from_secret: HOST_KEY_FILE_PATH
       SEND_GRID_API_KEY:
         from_secret: SEND_GRID_API_KEY
       SERVICE_NAME:
@@ -131,6 +135,8 @@ steps:
         - ENABLE_ENCRYPTION
         - CERT_FILE_PATH
         - KEY_FILE_PATH
+        - HOST_CERT_FILE_PATH
+        - HOST_KEY_FILE_PATH
         - SEND_GRID_API_KEY
         - SERVICE_NAME
         - SERVICE_EMAIL
@@ -145,6 +151,8 @@ steps:
           ENABLE_ENCRYPTION=$ENABLE_ENCRYPTION
           CERT_FILE_PATH=$CERT_FILE_PATH
           KEY_FILE_PATH=$KEY_FILE_PATH
+          HOST_CERT_FILE_PATH=$HOST_CERT_FILE_PATH
+          HOST_KEY_FILE_PATH=$HOST_KEY_FILE_PATH
           SEND_GRID_API_KEY=$SEND_GRID_API_KEY
           SERVICE_NAME=$SERVICE_NAME
           SERVICE_EMAIL=$SERVICE_NAME
