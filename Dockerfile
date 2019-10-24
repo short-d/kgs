@@ -13,4 +13,4 @@ RUN go mod verify
 
 COPY . .
 
-RUN go build -o build/app main.go
+RUN go build -o app main.go

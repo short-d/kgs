@@ -1,0 +1,30 @@
+version: '3'
+services:
+  app:
+    image: ${DOCKERHUB_USERNAME}/kgs:latest
+    ports:
+      - "${GRPC_API_PORT}:8080"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    command: [
+      "./scripts/wait-for-it", "-s", "-t", "0", "db:5432", "--",
+      "./app", "start", "--migration", "app/adapter/db/migration"
+    ]
+  db:
+    image: postgres:12
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - 5401:5432
+volumes:
+  db_data:
