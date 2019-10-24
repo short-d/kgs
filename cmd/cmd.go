@@ -35,7 +35,7 @@ func NewRootCmd(
 			},
 		},
 	)
-	startCmd.AddStringFlag(&migrationRoot, "migration", "app/adapter/migration", "migration migrations root directory")
+	startCmd.AddStringFlag(&migrationRoot, "migration", "app/adapter/db/migration", "migration migrations root directory")
 
 	rootCmd := cmdFactory.NewCommand(
 		fw.CommandConfig{

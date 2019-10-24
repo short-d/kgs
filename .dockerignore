@@ -1,0 +1,16 @@
+# Documentation
+README.md
+doc
+
+# ignore files
+.gitignore
+.dockerignore
+
+# Environmental variables
+.env
+
+# Coverage
+coverage.txt
+
+# Certificates
+/certs

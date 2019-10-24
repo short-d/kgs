@@ -1,4 +1,4 @@
-FROM golang:1.13.0-alpine
+FROM golang:1.13.1-alpine
 
 WORKDIR /app
 
@@ -22,4 +22,4 @@ ARG CODECOV_TOKEN
 
 ENV CODECOV_TOKEN=${CODECOV_TOKEN}
 
-CMD ["./bin/code-coverage"]
+CMD ["./scripts/code-coverage"]
