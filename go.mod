@@ -13,4 +13,4 @@ require (
 )
 
 // Please uncomment the following line for local debugging purpose
-// replace github.com/byliuyang/app => ../app
+replace github.com/byliuyang/app => ../app

@@ -26,7 +26,6 @@ func (p ProducerPersist) Produce(KeyLength uint) error {
 
 	p.keyGen.GenerateKeys(KeyLength, keys)
 	for key := range keys {
-		p.logger.Info(string(key))
 		err := p.repo.Create(key)
 		if err != nil {
 			return err

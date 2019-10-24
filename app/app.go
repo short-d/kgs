@@ -3,29 +3,45 @@ package app
 import (
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/kgs/dep"
+	"github.com/byliuyang/kgs/dep/provider"
 )
 
+type Config struct {
+	ServiceName         string
+	ServiceEmailAddress string
+	MigrationRoot       string
+	GRpcAPIPort         int
+	SendGridAPIKey      string
+	TemplatePattern     string
+}
+
 func Start(
+	config Config,
 	dbConfig fw.DBConfig,
-	migrationRoot string,
 	dbConnector fw.DBConnector,
 	dbMigrationTool fw.DBMigrationTool,
 	securityPolicy fw.SecurityPolicy,
-	gRpcAPIPort int,
 ) {
 	db, err := dbConnector.Connect(dbConfig)
 	if err != nil {
 		panic(err)
 	}
 
-	err = dbMigrationTool.Migrate(db, migrationRoot)
+	err = dbMigrationTool.Migrate(db, config.MigrationRoot)
 	if err != nil {
 		panic(err)
 	}
 
-	gRpcService, err := dep.InitGRpcService("Kgs", db, securityPolicy)
+	gRpcService, err := dep.InitGRpcService(
+		config.ServiceName,
+		provider.ServiceEmailAddress(config.ServiceEmailAddress),
+		db,
+		securityPolicy,
+		provider.SendGridAPIKey(config.SendGridAPIKey),
+		provider.TemplatePattern(config.TemplatePattern),
+	)
 	if err != nil {
 		panic(err)
 	}
-	gRpcService.StartAndWait(gRpcAPIPort)
+	gRpcService.StartAndWait(config.GRpcAPIPort)
 }

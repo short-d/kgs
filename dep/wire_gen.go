@@ -20,6 +20,7 @@ import (
 	"github.com/byliuyang/kgs/app/adapter/rpc"
 	"github.com/byliuyang/kgs/app/usecase/keys"
 	"github.com/byliuyang/kgs/app/usecase/keys/gen"
+	"github.com/byliuyang/kgs/dep/provider"
 	"github.com/google/wire"
 )
 
@@ -45,7 +46,7 @@ func InitEnvironment() fw.Environment {
 	return goDotEnv
 }
 
-func InitGRpcService(name string, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy) (mdservice.Service, error) {
+func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddress, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy, sendGridAPIKey provider.SendGridAPIKey, templatePattern provider.TemplatePattern) (mdservice.Service, error) {
 	availableKeySQL := db.NewAvailableKeySQL(sqlDB)
 	v := gen.NewBase62()
 	alphabet, err := gen.NewAlphabet(v)
@@ -56,7 +57,13 @@ func InitGRpcService(name string, sqlDB *sql.DB, securityPolicy fw.SecurityPolic
 	producerPersist := keys.NewProducerPersist(availableKeySQL, alphabet, logger)
 	allocatedKeySQL := db.NewAllocatedKeySQL(sqlDB)
 	consumerPersist := keys.NewConsumerPersist(availableKeySQL, allocatedKeySQL)
-	keyGenController := rpc.NewKeyGenController(producerPersist, consumerPersist, logger)
+	sendGrid := provider.NewSendGrid(sendGridAPIKey)
+	emailNotifier := provider.NewEmailNotifier(name, serviceEmailAddress, sendGrid)
+	template, err := provider.NewTemplate(templatePattern)
+	if err != nil {
+		return mdservice.Service{}, err
+	}
+	keyGenController := rpc.NewKeyGenController(producerPersist, consumerPersist, emailNotifier, template, logger)
 	kgsAPI := rpc.NewKgsAPI(keyGenController)
 	gRpc, err := mdgrpc.NewGRpc(kgsAPI, securityPolicy)
 	if err != nil {
