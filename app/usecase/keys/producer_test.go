@@ -81,8 +81,6 @@ func ExampleProducer_Produce() {
 	err := producer.Produce(1)
 
 	fmt.Println(err)
-	fmt.Println(repo.GetKeys())
 	// Output:
 	// key exists: ab
-	// [ab bc]
 }
