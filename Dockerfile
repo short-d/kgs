@@ -1,4 +1,4 @@
-FROM golang:1.13.0-alpine
+FROM golang:1.13.1-alpine
 
 WORKDIR /app
 
@@ -13,4 +13,4 @@ RUN go mod verify
 
 COPY . .
 
-RUN go build -o app main.go
+RUN go build -o build/app main.go

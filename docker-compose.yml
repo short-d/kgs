@@ -14,13 +14,16 @@ services:
       - ENABLE_ENCRYPTION=${ENABLE_ENCRYPTION}
       - CERT_FILE_PATH=${CERT_FILE_PATH}
       - KEY_FILE_PATH=${KEY_FILE_PATH}
-      - GRPC_API_PORT={GRPC_API_PORT}
+      - GRPC_API_PORT=${GRPC_API_PORT}
       - SEND_GRID_API_KEY=${SEND_GRID_API_KEY}
       - SERVICE_NAME=${SERVICE_NAME}
       - SERVICE_EMAIL=${SERVICE_EMAIL}
+    volumes:
+      - "$HOST_CERT_FILE_PATH:$CERT_FILE_PATH"
+      - "$HOST_KEY_FILE_PATH:$KEY_FILE_PATH"
     command: [
       "./scripts/wait-for-it", "-s", "-t", "0", "db:5432", "--",
-      "./app", "start", "--migration", "app/adapter/db/migration"
+      "./build/app", "start", "--migration", "app/adapter/db/migration"
     ]
   db:
     image: postgres:12

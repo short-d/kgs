@@ -11,3 +11,6 @@ doc
 
 # Coverage
 coverage.txt
+
+# Certificates
+/certs
