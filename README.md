@@ -1,5 +1,5 @@
 # KGS
-Key generation service written in Go
+Offline Key generation service written in Go
 
 ## Prerequisites
 - go v1.13
