@@ -100,6 +100,18 @@ steps:
         from_secret: DB_PASSWORD
       DB_NAME:
         from_secret: DB_NAME
+      ENABLE_ENCRYPTION:
+        from_secret: ENABLE_ENCRYPTION
+      CERT_FILE_PATH:
+        from_secret: CERT_FILE_PATH
+      KEY_FILE_PATH:
+        from_secret: KEY_FILE_PATH
+      SEND_GRID_API_KEY:
+        from_secret: SEND_GRID_API_KEY
+      SERVICE_NAME:
+        from_secret: SERVICE_NAME
+      SERVICE_EMAIL:
+        from_secret: SERVICE_EMAIL
       GRPC_API_PORT:
         from_secret: GRPC_API_PORT
     settings:
@@ -116,15 +128,26 @@ steps:
         - DB_USER
         - DB_PASSWORD
         - DB_NAME
+        - ENABLE_ENCRYPTION
+        - CERT_FILE_PATH
+        - KEY_FILE_PATH
+        - SEND_GRID_API_KEY
+        - SERVICE_NAME
+        - SERVICE_EMAIL
         - GRPC_API_PORT
       script:
-        - docker pull $DOCKERHUB_USERNAME/short-frontend
-        - docker pull $DOCKERHUB_USERNAME/short-backend
+        - docker pull $DOCKERHUB_USERNAME/kgs
         - cd $DEST_DIR;
           DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME
           DB_USER=$DB_USER
           DB_PASSWORD=$DB_PASSWORD
           DB_NAME=$DB_NAME
+          ENABLE_ENCRYPTION=$ENABLE_ENCRYPTION
+          CERT_FILE_PATH=$CERT_FILE_PATH
+          KEY_FILE_PATH=$KEY_FILE_PATH
+          SEND_GRID_API_KEY=$SEND_GRID_API_KEY
+          SERVICE_NAME=$SERVICE_NAME
+          SERVICE_EMAIL=$SERVICE_NAME
           GRPC_API_PORT=$GRPC_API_PORT
           docker-compose up -d
     when:

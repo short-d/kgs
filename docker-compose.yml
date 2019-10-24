@@ -11,6 +11,13 @@ services:
       - DB_PORT=5432
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
+      - ENABLE_ENCRYPTION=${ENABLE_ENCRYPTION}
+      - CERT_FILE_PATH=${CERT_FILE_PATH}
+      - KEY_FILE_PATH=${KEY_FILE_PATH}
+      - GRPC_API_PORT={GRPC_API_PORT}
+      - SEND_GRID_API_KEY=${SEND_GRID_API_KEY}
+      - SERVICE_NAME=${SERVICE_NAME}
+      - SERVICE_EMAIL=${SERVICE_EMAIL}
     command: [
       "./scripts/wait-for-it", "-s", "-t", "0", "db:5432", "--",
       "./app", "start", "--migration", "app/adapter/db/migration"
