@@ -5,6 +5,8 @@ package dep
 import (
 	"database/sql"
 
+	"github.com/byliuyang/kgs/app/adapter/rpc/proto"
+
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/app/modern/mdcli"
 	"github.com/byliuyang/app/modern/mddb"
@@ -74,7 +76,7 @@ func InitGRpcService(
 		wire.Bind(new(fw.Server), new(mdgrpc.GRpc)),
 		wire.Bind(new(fw.GRpcAPI), new(rpc.KgsAPI)),
 		wire.Bind(new(fw.EmailSender), new(mdemail.SendGrid)),
-		wire.Bind(new(rpc.KeyGenServer), new(rpc.KeyGenController)),
+		wire.Bind(new(proto.KeyGenServer), new(rpc.KeyGenServer)),
 		wire.Bind(new(notification.Notifier), new(notification.EmailNotifier)),
 		wire.Bind(new(keys.Producer), new(keys.ProducerPersist)),
 		wire.Bind(new(keys.Consumer), new(keys.ConsumerPersist)),
@@ -88,7 +90,7 @@ func InitGRpcService(
 		mdservice.New,
 		provider.NewSendGrid,
 
-		rpc.NewKeyGenController,
+		rpc.NewKeyGenServer,
 		rpc.NewKgsAPI,
 		provider.NewEmailNotifier,
 		provider.NewTemplate,

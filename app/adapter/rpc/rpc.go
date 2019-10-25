@@ -2,19 +2,20 @@ package rpc
 
 import (
 	"github.com/byliuyang/app/fw"
+	"github.com/byliuyang/kgs/app/adapter/rpc/proto"
 	"google.golang.org/grpc"
 )
 
 var _ fw.GRpcAPI = (*KgsAPI)(nil)
 
 type KgsAPI struct {
-	keyGenServer KeyGenServer
+	keyGenServer proto.KeyGenServer
 }
 
 func (k KgsAPI) RegisterServers(server *grpc.Server) {
-	RegisterKeyGenServer(server, k.keyGenServer)
+	proto.RegisterKeyGenServer(server, k.keyGenServer)
 }
 
-func NewKgsAPI(keyGenServer KeyGenServer) KgsAPI {
+func NewKgsAPI(keyGenServer proto.KeyGenServer) KgsAPI {
 	return KgsAPI{keyGenServer: keyGenServer}
 }
