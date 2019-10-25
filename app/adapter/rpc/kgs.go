@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/byliuyang/app/fw"
@@ -32,6 +33,7 @@ func (k KeyGenServer) AllocateKeys(
 	if err != nil {
 		return &proto.AllocateKeysResponse{}, err
 	}
+	k.logger.Info(fmt.Sprintf("Allocated %d keys to client", len(allocatedKeys)))
 	return &proto.AllocateKeysResponse{Keys: allocatedKeys}, nil
 }
 
