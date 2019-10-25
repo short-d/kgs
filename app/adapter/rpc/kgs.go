@@ -4,15 +4,13 @@ import (
 	"context"
 	"time"
 
-	"github.com/byliuyang/kgs/app/adapter/rpc/proto"
-
+	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/kgs/app/adapter/message"
+	"github.com/byliuyang/kgs/app/adapter/rpc/proto"
 	"github.com/byliuyang/kgs/app/adapter/template"
 	"github.com/byliuyang/kgs/app/entity"
-	"github.com/byliuyang/kgs/app/usecase/notification"
-
-	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/kgs/app/usecase/keys"
+	"github.com/byliuyang/kgs/app/usecase/notification"
 	"github.com/golang/protobuf/ptypes/empty"
 )
 
