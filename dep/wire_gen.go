@@ -63,8 +63,8 @@ func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddre
 	if err != nil {
 		return mdservice.Service{}, err
 	}
-	keyGenController := rpc.NewKeyGenController(producerPersist, consumerPersist, emailNotifier, template, logger)
-	kgsAPI := rpc.NewKgsAPI(keyGenController)
+	keyGenServer := rpc.NewKeyGenServer(producerPersist, consumerPersist, emailNotifier, template, logger)
+	kgsAPI := rpc.NewKgsAPI(keyGenServer)
 	gRpc, err := mdgrpc.NewGRpc(kgsAPI, securityPolicy)
 	if err != nil {
 		return mdservice.Service{}, err
