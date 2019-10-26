@@ -38,13 +38,10 @@ func (a AvailableKeySQL) RetrieveInBatch(maxCount uint) ([]entity.Key, error) {
 	query := fmt.Sprintf(`
 SELECT "%s"
 FROM "%s"
-ORDER BY
-"%s"
 LIMIT $1
 `,
 		table.AvailableKey.ColumnKey,
 		table.AvailableKey.TableName,
-		table.AvailableKey.ColumnKey,
 	)
 	rows, err := a.db.Query(query, maxCount)
 	if err != nil {
