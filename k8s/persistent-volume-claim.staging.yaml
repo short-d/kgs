@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kgs-1-db-data
+  namespace: staging
+  labels:
+    volume: db-data
+    app: kgs
+    id: "1"
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200M
