@@ -15,6 +15,7 @@ type Config struct {
 	TemplatePattern     string
 }
 
+// Start launches kgs service
 func Start(
 	config Config,
 	dbConfig fw.DBConfig,
