@@ -46,7 +46,7 @@ steps:
       event:
         - push
 
-  - name: publish to Docker registry
+  - name: publish staging image to DockerHub
     image: docker
     environment:
       DOCKERHUB_USERNAME:
@@ -55,8 +55,8 @@ steps:
         from_secret: DOCKERHUB_PASSWORD
     commands:
       - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-      - docker tag kgs:latest $DOCKERHUB_USERNAME/kgs:latest
-      - docker push $DOCKERHUB_USERNAME/kgs:latest
+      - docker tag kgs:latest $DOCKERHUB_USERNAME/kgs-staging:latest
+      - docker push $DOCKERHUB_USERNAME/kgs-staging:latest
     volumes:
       - name: docker
         path: /var/run/docker.sock
@@ -66,98 +66,19 @@ steps:
       event:
         - push
 
-  - name: upload docker-compose.yml
-    image: appleboy/drone-scp
-    settings:
-      host:
-        from_secret: SERVER_HOST
-      username:
-        from_secret: SERVER_USER
-      password:
-        from_secret: SERVER_PASSWORD
-      port: 22
-      command_timeout: 2m
-      target:
-        from_secret: DEST_DIR
-      source:
-        - docker-compose.yml
-    when:
-      branch:
-        - production
-      event:
-        - push
-
-  - name: deploy service
-    image: appleboy/drone-ssh
+  - name: publish production image to DockerHub
+    image: docker
     environment:
       DOCKERHUB_USERNAME:
         from_secret: DOCKERHUB_USERNAME
-      DEST_DIR:
-        from_secret: DEST_DIR
-      DB_USER:
-        from_secret: DB_USER
-      DB_PASSWORD:
-        from_secret: DB_PASSWORD
-      DB_NAME:
-        from_secret: DB_NAME
-      ENABLE_ENCRYPTION:
-        from_secret: ENABLE_ENCRYPTION
-      CERT_FILE_PATH:
-        from_secret: CERT_FILE_PATH
-      KEY_FILE_PATH:
-        from_secret: KEY_FILE_PATH
-      HOST_CERT_FILE_PATH:
-        from_secret: HOST_CERT_FILE_PATH
-      HOST_KEY_FILE_PATH:
-        from_secret: HOST_KEY_FILE_PATH
-      SEND_GRID_API_KEY:
-        from_secret: SEND_GRID_API_KEY
-      SERVICE_NAME:
-        from_secret: SERVICE_NAME
-      SERVICE_EMAIL:
-        from_secret: SERVICE_EMAIL
-      GRPC_API_PORT:
-        from_secret: GRPC_API_PORT
-    settings:
-      host:
-        from_secret: SERVER_HOST
-      username:
-        from_secret: SERVER_USER
-      password:
-        from_secret: SERVER_PASSWORD
-      port: 22
-      envs:
-        - DOCKERHUB_USERNAME
-        - DEST_DIR
-        - DB_USER
-        - DB_PASSWORD
-        - DB_NAME
-        - ENABLE_ENCRYPTION
-        - CERT_FILE_PATH
-        - KEY_FILE_PATH
-        - HOST_CERT_FILE_PATH
-        - HOST_KEY_FILE_PATH
-        - SEND_GRID_API_KEY
-        - SERVICE_NAME
-        - SERVICE_EMAIL
-        - GRPC_API_PORT
-      script:
-        - docker pull $DOCKERHUB_USERNAME/kgs
-        - cd $DEST_DIR;
-          DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME
-          DB_USER=$DB_USER
-          DB_PASSWORD=$DB_PASSWORD
-          DB_NAME=$DB_NAME
-          ENABLE_ENCRYPTION=$ENABLE_ENCRYPTION
-          CERT_FILE_PATH=$CERT_FILE_PATH
-          KEY_FILE_PATH=$KEY_FILE_PATH
-          HOST_CERT_FILE_PATH=$HOST_CERT_FILE_PATH
-          HOST_KEY_FILE_PATH=$HOST_KEY_FILE_PATH
-          SEND_GRID_API_KEY=$SEND_GRID_API_KEY
-          SERVICE_NAME=$SERVICE_NAME
-          SERVICE_EMAIL=$SERVICE_NAME
-          GRPC_API_PORT=$GRPC_API_PORT
-          docker-compose up -d
+      DOCKERHUB_PASSWORD:
+        from_secret: DOCKERHUB_PASSWORD
+    commands:
+      - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+      - docker push $DOCKERHUB_USERNAME/kgs:latest
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
     when:
       branch:
         - production
