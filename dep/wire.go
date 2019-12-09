@@ -71,6 +71,7 @@ func InitGRpcService(
 	securityPolicy fw.SecurityPolicy,
 	sendGridAPIKey provider.SendGridAPIKey,
 	templatePattern provider.TemplatePattern,
+	keysFetchBufferSize provider.KeyFetchBufferSize,
 ) (mdservice.Service, error) {
 	wire.Build(
 		wire.Bind(new(fw.Server), new(mdgrpc.GRpc)),
@@ -79,7 +80,7 @@ func InitGRpcService(
 		wire.Bind(new(proto.KeyGenServer), new(rpc.KeyGenServer)),
 		wire.Bind(new(notification.Notifier), new(notification.EmailNotifier)),
 		wire.Bind(new(keys.Producer), new(keys.ProducerPersist)),
-		wire.Bind(new(keys.Consumer), new(keys.ConsumerPersist)),
+		wire.Bind(new(keys.Consumer), new(keys.ConsumerCached)),
 		wire.Bind(new(gen.Generator), new(gen.Alphabet)),
 		wire.Bind(new(repo.AvailableKey), new(db.AvailableKeySQL)),
 		wire.Bind(new(repo.AllocatedKey), new(db.AllocatedKeySQL)),
@@ -95,6 +96,7 @@ func InitGRpcService(
 		provider.NewEmailNotifier,
 		provider.NewTemplate,
 		keys.NewProducerPersist,
+		provider.NewConsumer,
 		keys.NewConsumerPersist,
 		db.NewAvailableKeySQL,
 		db.NewAllocatedKeySQL,
