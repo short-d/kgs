@@ -7,6 +7,7 @@ package dep
 
 import (
 	"database/sql"
+
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/app/modern/mdcli"
 	"github.com/byliuyang/app/modern/mddb"
@@ -45,7 +46,7 @@ func InitEnvironment() fw.Environment {
 	return goDotEnv
 }
 
-func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddress, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy, sendGridAPIKey provider.SendGridAPIKey, templatePattern provider.TemplatePattern, keysFetchBufferSize provider.KeyFetchBufferSize) (mdservice.Service, error) {
+func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddress, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy, sendGridAPIKey provider.SendGridAPIKey, templatePattern provider.TemplatePattern, cacheSize provider.CacheSize) (mdservice.Service, error) {
 	availableKeySQL := db.NewAvailableKeySQL(sqlDB)
 	v := gen.NewBase62()
 	alphabet, err := gen.NewAlphabet(v)
@@ -56,7 +57,7 @@ func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddre
 	producerPersist := keys.NewProducerPersist(availableKeySQL, alphabet, logger)
 	allocatedKeySQL := db.NewAllocatedKeySQL(sqlDB)
 	consumerPersist := keys.NewConsumerPersist(availableKeySQL, allocatedKeySQL)
-	consumerCached, err := provider.NewConsumer(keysFetchBufferSize, consumerPersist)
+	consumerCached, err := provider.NewConsumer(cacheSize, consumerPersist)
 	if err != nil {
 		return mdservice.Service{}, err
 	}

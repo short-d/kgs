@@ -71,7 +71,7 @@ func InitGRpcService(
 	securityPolicy fw.SecurityPolicy,
 	sendGridAPIKey provider.SendGridAPIKey,
 	templatePattern provider.TemplatePattern,
-	keysFetchBufferSize provider.KeyFetchBufferSize,
+	cacheSize provider.CacheSize,
 ) (mdservice.Service, error) {
 	wire.Build(
 		wire.Bind(new(fw.Server), new(mdgrpc.GRpc)),

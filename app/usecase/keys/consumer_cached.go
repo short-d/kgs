@@ -20,26 +20,26 @@ type ConsumerCached struct {
 func (p ConsumerCached) ConsumeInBatch(maxCount uint) ([]string, error) {
 	if len(p.buffer) < int(maxCount) {
 		go func() {
-			p.fetchKeys()
+			p.loadKeys()
 		}()
 	}
 
-	res := make([]string, 0, maxCount)
+	keys := make([]string, 0, maxCount)
 
 	for ; maxCount > 0; maxCount-- {
 		entry := <-p.buffer
 
 		if entry.err != nil {
-			return res, entry.err
+			return keys, entry.err
 		}
 
-		res = append(res, entry.key)
+		keys = append(keys, entry.key)
 	}
 
-	return res, nil
+	return keys, nil
 }
 
-func (p ConsumerCached) fetchKeys() {
+func (p ConsumerCached) loadKeys() {
 	keys, err := p.delegate.ConsumeInBatch(uint(p.bufferSize))
 
 	if err != nil {
@@ -60,7 +60,7 @@ func (p ConsumerCached) fetchKeys() {
 // NewCachedConsumer returns the cached proxy implementation of Consumer interface
 func NewCachedConsumer(bufferSize int, delegate Consumer) (ConsumerCached, error) {
 	if bufferSize < 1 {
-		return ConsumerCached{}, errors.New("buffer size can't be less then 1")
+		return ConsumerCached{}, errors.New("buffer size can't be less than 1")
 	}
 
 	return ConsumerCached{
