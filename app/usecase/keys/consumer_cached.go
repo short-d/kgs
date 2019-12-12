@@ -18,22 +18,32 @@ type ConsumerCached struct {
 }
 
 func (p ConsumerCached) ConsumeInBatch(maxCount uint) ([]string, error) {
-	if len(p.buffer) < int(maxCount) {
-		go func() {
-			p.loadKeys()
-		}()
-	}
-
 	keys := make([]string, 0, maxCount)
 
 	for ; maxCount > 0; maxCount-- {
-		entry := <-p.buffer
+		// there is probability to get the list of keys with the size less than bufferSize
+		// in this case we listen to done channel to perform loop break
+		done := make(chan bool)
 
-		if entry.err != nil {
-			return keys, entry.err
+		// we should load new keys as soon as our buffer is empty
+		if len(p.buffer) == 0 {
+			go func() {
+				p.loadKeys()
+				done <- true
+			}()
 		}
 
-		keys = append(keys, entry.key)
+		select {
+		case entry := <-p.buffer:
+			if entry.err != nil {
+				return keys, entry.err
+			}
+
+			keys = append(keys, entry.key)
+		case <-done:
+			break
+		}
+
 	}
 
 	return keys, nil
