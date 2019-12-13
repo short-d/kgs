@@ -13,6 +13,7 @@ type Config struct {
 	GRpcAPIPort         int
 	SendGridAPIKey      string
 	TemplatePattern     string
+	CacheSize           int
 }
 
 // Start launches kgs service
@@ -40,6 +41,7 @@ func Start(
 		securityPolicy,
 		provider.SendGridAPIKey(config.SendGridAPIKey),
 		provider.TemplatePattern(config.TemplatePattern),
+		provider.CacheSize(config.CacheSize),
 	)
 	if err != nil {
 		panic(err)

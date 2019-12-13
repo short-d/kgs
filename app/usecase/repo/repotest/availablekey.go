@@ -1,8 +1,8 @@
 package repotest
 
 import (
-	"errors"
 	"fmt"
+	"sort"
 
 	"github.com/byliuyang/kgs/app/entity"
 	"github.com/byliuyang/kgs/app/usecase/repo"
@@ -11,23 +11,30 @@ import (
 var _ repo.AvailableKey = (*AvailableKeyFake)(nil)
 
 type AvailableKeyFake struct {
-	keys map[entity.Key]bool
+	keys map[entity.Key]struct{}
 }
 
 func (a AvailableKeyFake) Create(key entity.Key) error {
 	if _, ok := a.keys[key]; ok {
-		return errors.New(fmt.Sprintf("key exists: %s", string(key)))
+		return fmt.Errorf("key exists: %s", string(key))
 	}
-	a.keys[key] = true
+	a.keys[key] = struct{}{}
 	return nil
 }
 
 func (a AvailableKeyFake) RetrieveInBatch(maxCount uint) ([]entity.Key, error) {
-	panic("implement me")
+	keys := a.GetKeys()
+	if len(keys) <= int(maxCount) {
+		return keys, nil
+	}
+	return keys[:maxCount], nil
 }
 
 func (a AvailableKeyFake) DeleteInBatch(keys []entity.Key) error {
-	panic("implement me")
+	for _, key := range keys {
+		delete(a.keys, key)
+	}
+	return nil
 }
 
 func (k AvailableKeyFake) GetKeys() []entity.Key {
@@ -35,11 +42,16 @@ func (k AvailableKeyFake) GetKeys() []entity.Key {
 	for key := range k.keys {
 		keys = append(keys, key)
 	}
+
+	sort.Slice(keys, func(i, j int) bool {
+		return keys[i] < keys[j]
+	})
+
 	return keys
 }
 
 func NewAvailableKeyFake() AvailableKeyFake {
 	return AvailableKeyFake{
-		keys: make(map[entity.Key]bool),
+		keys: make(map[entity.Key]struct{}),
 	}
 }

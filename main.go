@@ -31,6 +31,8 @@ func main() {
 	gRpcAPIPort := mustInt(env.GetEnv("GRPC_API_PORT", "8080"))
 	sendGridAPIKey := env.GetEnv("SEND_GRID_API_KEY", "")
 
+	CacheSize := mustInt(env.GetEnv("CACHE_SIZE", "100"))
+
 	config := app.Config{
 		ServiceName:         serviceName,
 		ServiceEmailAddress: serviceEmailAddress,
@@ -38,6 +40,7 @@ func main() {
 		GRpcAPIPort:         gRpcAPIPort,
 		SendGridAPIKey:      sendGridAPIKey,
 		TemplatePattern:     "app/adapter/template/*.gohtml",
+		CacheSize:           CacheSize,
 	}
 
 	dbConfig := fw.DBConfig{
