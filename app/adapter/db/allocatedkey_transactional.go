@@ -3,29 +3,21 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"time"
-
 	"github.com/byliuyang/kgs/app/adapter/db/table"
 	"github.com/byliuyang/kgs/app/entity"
 	"github.com/byliuyang/kgs/app/usecase/repo"
+	"time"
 )
 
-var _ repo.AllocatedKey = (*AllocatedKeySQL)(nil)
+var _ repo.AllocatedKey = (*AllocatedKeyTransactional)(nil)
 
-type AllocatedKeySQL struct {
-	db *sql.DB
+// AllocatedKeyTransactional performs SQL operations using the underlying sql transaction object
+type AllocatedKeyTransactional struct {
+	tx *sql.Tx
 }
 
-func (a AllocatedKeySQL) CreateInBatch(keys []entity.Key) error {
-	tx, err := a.db.Begin()
-	if err != nil {
-		return nil
-	}
-	// The rollback will be ignored if the tx has been committed later in the
-	// function.
-	defer tx.Rollback()
-
-	statement, err := tx.Prepare(
+func (a AllocatedKeyTransactional) CreateInBatch(keys []entity.Key) error {
+	statement, err := a.tx.Prepare(
 		fmt.Sprintf(`
 INSERT INTO "%s" ("%s", "%s")
 VALUES ($1, $2);
@@ -48,9 +40,11 @@ VALUES ($1, $2);
 			return err
 		}
 	}
-	return tx.Commit()
+
+	return nil
 }
 
-func NewAllocatedKeySQL(db *sql.DB) AllocatedKeySQL {
-	return AllocatedKeySQL{db: db}
+// NewAllocatedKeyTransactional creates a new instance of AllocatedKeyTransactional
+func NewAllocatedKeyTransactional(tx *sql.Tx) AllocatedKeyTransactional {
+	return AllocatedKeyTransactional{tx: tx}
 }

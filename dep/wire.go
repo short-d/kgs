@@ -3,7 +3,9 @@
 package dep
 
 import (
+	"errors"
 	"database/sql"
+	"github.com/byliuyang/kgs/app/usecase/transactional"
 
 	"github.com/byliuyang/kgs/app/adapter/rpc/proto"
 
@@ -59,6 +61,30 @@ func InitEnvironment() fw.Environment {
 	return mdenv.GoDotEnv{}
 }
 
+func allocatedKey() keys.AllocatedKeyRepoFactory {
+	return func(tx transactional.Transaction) (repo.AllocatedKey, error) {
+		sqlTx, ok := tx.(*sql.Tx)
+
+		if !ok {
+			return nil, errors.New("allocatedKeyFactory expects sql.Tx")
+		}
+
+		return db.NewAllocatedKeyTransactional(sqlTx), nil
+	}
+}
+
+func availableKey() keys.AvailableKeyRepoFactory {
+	return func(tx transactional.Transaction) (repo.AvailableKey, error) {
+		sqlTx, ok := tx.(*sql.Tx)
+
+		if !ok {
+			return nil, errors.New("availableKeyFactory expects sql.Tx")
+		}
+
+		return db.NewAvailableKeyTransactional(sqlTx), nil
+	}
+}
+
 var observabilitySet = wire.NewSet(
 	mdlogger.NewLocal,
 	mdtracer.NewLocal,
@@ -83,7 +109,7 @@ func InitGRpcService(
 		wire.Bind(new(keys.Consumer), new(keys.ConsumerCached)),
 		wire.Bind(new(gen.Generator), new(gen.Alphabet)),
 		wire.Bind(new(repo.AvailableKey), new(db.AvailableKeySQL)),
-		wire.Bind(new(repo.AllocatedKey), new(db.AllocatedKeySQL)),
+		wire.Bind(new(transactional.Factory), new(db.FactorySQL)),
 
 		observabilitySet,
 
@@ -96,10 +122,12 @@ func InitGRpcService(
 		provider.NewEmailNotifier,
 		provider.NewTemplate,
 		keys.NewProducerPersist,
+		db.NewAvailableKeySQL,
 		provider.NewConsumer,
 		keys.NewConsumerPersist,
-		db.NewAvailableKeySQL,
-		db.NewAllocatedKeySQL,
+		availableKey,
+		allocatedKey,
+		db.NewFactorySQL,
 		gen.NewAlphabet,
 		gen.NewBase62,
 	)

@@ -1,9 +1,9 @@
 package keys
 
 import (
-	"sync"
-
+	"github.com/byliuyang/kgs/app/entity"
 	"github.com/byliuyang/kgs/app/usecase/repo"
+	"github.com/byliuyang/kgs/app/usecase/transactional"
 )
 
 type Consumer interface {
@@ -12,45 +12,69 @@ type Consumer interface {
 
 var _ Consumer = (*ConsumerPersist)(nil)
 
+type AvailableKeyRepoFactory func(tx transactional.Transaction) (repo.AvailableKey, error)
+type AllocatedKeyRepoFactory func(tx transactional.Transaction) (repo.AllocatedKey, error)
+
 type ConsumerPersist struct {
-	mutex            *sync.Mutex
-	availableKeyRepo repo.AvailableKey
-	allocatedKeyRepo repo.AllocatedKey
+	availableKeyRepoFactory AvailableKeyRepoFactory
+	allocatedKeyRepoFactory AllocatedKeyRepoFactory
+	transactionFactory      transactional.Factory
 }
 
-func (p ConsumerPersist) ConsumeInBatch(maxCount uint) ([]string, error) {
-	p.mutex.Lock()
-	defer p.mutex.Unlock()
+func (p ConsumerPersist) ConsumeInBatch(maxCount uint) (rawKeys []string, err error) {
+	tx, err := p.transactionFactory.Create()
 
-	keys, err := p.availableKeyRepo.RetrieveInBatch(maxCount)
 	if err != nil {
 		return nil, err
 	}
 
-	err = p.allocatedKeyRepo.CreateInBatch(keys)
+	var keys []entity.Key
+
+	err = transactional.WithTransaction(tx, func(tx transactional.Transaction) error {
+		availableKeyRepo, err := p.availableKeyRepoFactory(tx)
+
+		if err != nil {
+			return err
+		}
+
+		allocatedKeyRepo, err := p.allocatedKeyRepoFactory(tx)
+
+		if err != nil {
+			return err
+		}
+
+		keys, err = availableKeyRepo.RetrieveInBatch(maxCount)
+
+		if err != nil {
+			return err
+		}
+
+		if err = allocatedKeyRepo.CreateInBatch(keys); err != nil {
+			return err
+		}
+
+		return availableKeyRepo.DeleteInBatch(keys)
+	})
+
 	if err != nil {
 		return nil, err
 	}
 
-	err = p.availableKeyRepo.DeleteInBatch(keys)
-	if err != nil {
-		return nil, err
-	}
-
-	rawKeys := make([]string, 0)
 	for _, key := range keys {
 		rawKeys = append(rawKeys, string(key))
 	}
+
 	return rawKeys, nil
 }
 
 func NewConsumerPersist(
-	availableKeyRepo repo.AvailableKey,
-	allocatedKeyRepo repo.AllocatedKey,
+	availableKeyRepoFactory AvailableKeyRepoFactory,
+	allocatedKeyRepoFactory AllocatedKeyRepoFactory,
+	transactionFactory transactional.Factory,
 ) ConsumerPersist {
 	return ConsumerPersist{
-		mutex:            &sync.Mutex{},
-		availableKeyRepo: availableKeyRepo,
-		allocatedKeyRepo: allocatedKeyRepo,
+		availableKeyRepoFactory: availableKeyRepoFactory,
+		allocatedKeyRepoFactory: allocatedKeyRepoFactory,
+		transactionFactory:      transactionFactory,
 	}
 }

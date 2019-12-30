@@ -2,6 +2,9 @@ package keys
 
 import (
 	"errors"
+	"github.com/byliuyang/kgs/app/usecase/repo"
+	"github.com/byliuyang/kgs/app/usecase/transactional"
+	"github.com/byliuyang/kgs/app/usecase/transactional/transactionaltest"
 	"testing"
 
 	"github.com/byliuyang/kgs/app/entity"
@@ -117,8 +120,14 @@ func TestCachedConsumer(t *testing.T) {
 			}
 
 			mockConsumer := NewConsumerPersist(
-				&availableKeysRepo,
-				&allocatedKeysRepo,
+				func(tx transactional.Transaction) (key repo.AvailableKey, e error) {
+					return &availableKeysRepo, nil
+				},
+				func(tx transactional.Transaction) (key repo.AllocatedKey, e error) {
+					return &allocatedKeysRepo, nil
+				},
+
+				transactionaltest.NewFactoryFake(),
 			)
 
 			consumer, err := NewCachedConsumer(8, mockConsumer)

@@ -7,7 +7,7 @@ package dep
 
 import (
 	"database/sql"
-
+	"errors"
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/app/modern/mdcli"
 	"github.com/byliuyang/app/modern/mddb"
@@ -20,6 +20,8 @@ import (
 	"github.com/byliuyang/kgs/app/adapter/rpc"
 	"github.com/byliuyang/kgs/app/usecase/keys"
 	"github.com/byliuyang/kgs/app/usecase/keys/gen"
+	"github.com/byliuyang/kgs/app/usecase/repo"
+	"github.com/byliuyang/kgs/app/usecase/transactional"
 	"github.com/byliuyang/kgs/dep/provider"
 	"github.com/google/wire"
 )
@@ -55,8 +57,10 @@ func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddre
 	}
 	logger := mdlogger.NewLocal()
 	producerPersist := keys.NewProducerPersist(availableKeySQL, alphabet, logger)
-	allocatedKeySQL := db.NewAllocatedKeySQL(sqlDB)
-	consumerPersist := keys.NewConsumerPersist(availableKeySQL, allocatedKeySQL)
+	availableKeyRepoFactory := availableKey()
+	allocatedKeyRepoFactory := allocatedKey()
+	factorySQL := db.NewFactorySQL(sqlDB)
+	consumerPersist := keys.NewConsumerPersist(availableKeyRepoFactory, allocatedKeyRepoFactory, factorySQL)
 	consumerCached, err := provider.NewConsumer(cacheSize, consumerPersist)
 	if err != nil {
 		return mdservice.Service{}, err
@@ -78,5 +82,29 @@ func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddre
 }
 
 // wire.go:
+
+func allocatedKey() keys.AllocatedKeyRepoFactory {
+	return func(tx transactional.Transaction) (repo.AllocatedKey, error) {
+		sqlTx, ok := tx.(*sql.Tx)
+
+		if !ok {
+			return nil, errors.New("allocatedKeyFactory expects sql.Tx")
+		}
+
+		return db.NewAllocatedKeyTransactional(sqlTx), nil
+	}
+}
+
+func availableKey() keys.AvailableKeyRepoFactory {
+	return func(tx transactional.Transaction) (repo.AvailableKey, error) {
+		sqlTx, ok := tx.(*sql.Tx)
+
+		if !ok {
+			return nil, errors.New("availableKeyFactory expects sql.Tx")
+		}
+
+		return db.NewAvailableKeyTransactional(sqlTx), nil
+	}
+}
 
 var observabilitySet = wire.NewSet(mdlogger.NewLocal, mdtracer.NewLocal)
