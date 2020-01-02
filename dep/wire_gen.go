@@ -49,17 +49,16 @@ func InitEnvironment() fw.Environment {
 }
 
 func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddress, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy, sendGridAPIKey provider.SendGridAPIKey, templatePattern provider.TemplatePattern, cacheSize provider.CacheSize) (mdservice.Service, error) {
-	availableKeySQL := db.NewAvailableKeySQL(sqlDB)
+	availableKeyRepoFactory := availableKey()
+	factorySQL := db.NewFactorySQL(sqlDB)
 	v := gen.NewBase62()
 	alphabet, err := gen.NewAlphabet(v)
 	if err != nil {
 		return mdservice.Service{}, err
 	}
 	logger := mdlogger.NewLocal()
-	producerPersist := keys.NewProducerPersist(availableKeySQL, alphabet, logger)
-	availableKeyRepoFactory := availableKey()
+	producerPersist := keys.NewProducerPersist(availableKeyRepoFactory, factorySQL, alphabet, logger)
 	allocatedKeyRepoFactory := allocatedKey()
-	factorySQL := db.NewFactorySQL(sqlDB)
 	consumerPersist := keys.NewConsumerPersist(availableKeyRepoFactory, allocatedKeyRepoFactory, factorySQL)
 	consumerCached, err := provider.NewConsumer(cacheSize, consumerPersist)
 	if err != nil {

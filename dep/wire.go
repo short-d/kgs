@@ -108,7 +108,6 @@ func InitGRpcService(
 		wire.Bind(new(keys.Producer), new(keys.ProducerPersist)),
 		wire.Bind(new(keys.Consumer), new(keys.ConsumerCached)),
 		wire.Bind(new(gen.Generator), new(gen.Alphabet)),
-		wire.Bind(new(repo.AvailableKey), new(db.AvailableKeySQL)),
 		wire.Bind(new(transactional.Factory), new(db.FactorySQL)),
 
 		observabilitySet,
@@ -122,7 +121,6 @@ func InitGRpcService(
 		provider.NewEmailNotifier,
 		provider.NewTemplate,
 		keys.NewProducerPersist,
-		db.NewAvailableKeySQL,
 		provider.NewConsumer,
 		keys.NewConsumerPersist,
 		availableKey,

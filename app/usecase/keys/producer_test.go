@@ -2,6 +2,9 @@ package keys
 
 import (
 	"fmt"
+	"github.com/byliuyang/kgs/app/usecase/repo"
+	"github.com/byliuyang/kgs/app/usecase/transactional"
+	"github.com/byliuyang/kgs/app/usecase/transactional/transactionaltest"
 	"testing"
 
 	"github.com/byliuyang/app/mdtest"
@@ -50,10 +53,19 @@ func TestProducer_Produce(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			repo := repotest.NewAvailableKeyFake()
+			availableKeysRepo := repotest.NewAvailableKeyFake()
 			gen := gentest.NewGeneratorStub(testCase.keys)
 			logger := mdtest.NewLoggerFake()
-			producer := NewProducerPersist(repo, gen, &logger)
+
+			producer := NewProducerPersist(
+				func(tx transactional.Transaction) (key repo.AvailableKey, e error) {
+					return &availableKeysRepo, nil
+				},
+				transactionaltest.NewFactoryFake(),
+				gen,
+				&logger,
+			)
+
 			err := producer.Produce(uint(len(testCase.expKeys)))
 
 			if testCase.hasErr {
@@ -61,13 +73,13 @@ func TestProducer_Produce(t *testing.T) {
 			} else {
 				mdtest.Equal(t, nil, err)
 			}
-			mdtest.SameElements(t, testCase.expKeys, repo.GetKeys())
+			mdtest.SameElements(t, testCase.expKeys, availableKeysRepo.GetKeys())
 		})
 	}
 }
 
 func ExampleProducer_Produce() {
-	repo := repotest.NewAvailableKeyFake()
+	availableKeysRepo := repotest.NewAvailableKeyFake()
 	gen := gentest.NewGeneratorStub(
 		[]entity.Key{
 			"ab",
@@ -75,9 +87,19 @@ func ExampleProducer_Produce() {
 			"ab",
 			"bc",
 			"cd",
-		})
+		},
+	)
 	logger := mdtest.NewLoggerFake()
-	producer := NewProducerPersist(&repo, gen, &logger)
+
+	producer := NewProducerPersist(
+		func(tx transactional.Transaction) (key repo.AvailableKey, e error) {
+			return &availableKeysRepo, nil
+		},
+		transactionaltest.NewFactoryFake(),
+		gen,
+		&logger,
+	)
+
 	err := producer.Produce(1)
 
 	fmt.Println(err)
