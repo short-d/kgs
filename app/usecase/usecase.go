@@ -39,7 +39,6 @@ func (u UseCase) PopulateKey(keyLength uint, requesterEmail string) {
 		Email: requesterEmail,
 	}
 	err = u.notifier.NotifyRequester(msg, requester)
-	fmt.Println("-----")
 	if err != nil {
 		u.logger.Error(err)
 		return
