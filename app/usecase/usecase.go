@@ -27,7 +27,7 @@ func (u UseCase) PopulateKey(keyLength uint, requesterEmail string) {
 		return
 	}
 
-	timeElapsed := time.Now().Sub(startAt)
+	timeElapsed := time.Since(startAt)
 	msg, err := message.NewKeyGenSucceedMessage(u.template, timeElapsed)
 	if err != nil {
 		u.logger.Error(err)
