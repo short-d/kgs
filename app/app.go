@@ -12,7 +12,7 @@ type Config struct {
 	MigrationRoot       string
 	GRpcAPIPort         int
 	SendGridAPIKey      string
-	TemplatePattern     string
+	TemplateRootDir     string
 	CacheSize           int
 }
 
@@ -40,7 +40,7 @@ func Start(
 		db,
 		securityPolicy,
 		provider.SendGridAPIKey(config.SendGridAPIKey),
-		provider.TemplatePattern(config.TemplatePattern),
+		provider.TemplateRootDir(config.TemplateRootDir),
 		provider.CacheSize(config.CacheSize),
 	)
 	if err != nil {

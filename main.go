@@ -39,7 +39,7 @@ func main() {
 		MigrationRoot:       "app/adapter/db/migration",
 		GRpcAPIPort:         gRpcAPIPort,
 		SendGridAPIKey:      sendGridAPIKey,
-		TemplatePattern:     "app/adapter/template/*.gohtml",
+		TemplateRootDir:     "app/adapter/template",
 		CacheSize:           CacheSize,
 	}
 
