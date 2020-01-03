@@ -30,7 +30,7 @@ func TestCachedConsumer(t *testing.T) {
 				err:  nil,
 			},
 			skipBefore: 0,
-			count: 3,
+			count:      3,
 		},
 		{
 			name: "should load keys twice and return the entire buffer #2",
@@ -39,7 +39,7 @@ func TestCachedConsumer(t *testing.T) {
 				err:  nil,
 			},
 			skipBefore: 8,
-			count: 8,
+			count:      8,
 		},
 		{
 			name: "should return two items from the buffer #1",
@@ -48,7 +48,7 @@ func TestCachedConsumer(t *testing.T) {
 				err:  nil,
 			},
 			skipBefore: 3,
-			count: 2,
+			count:      2,
 		},
 		{
 			name: "should return one item from the buffer #1",
@@ -57,7 +57,7 @@ func TestCachedConsumer(t *testing.T) {
 				err:  nil,
 			},
 			skipBefore: 5,
-			count: 1,
+			count:      1,
 		},
 		{
 			name: "should return the first two items from the buffer #1, load new keys and return one key from the buffer #2",
@@ -66,7 +66,7 @@ func TestCachedConsumer(t *testing.T) {
 				err:  nil,
 			},
 			skipBefore: 6,
-			count: 3,
+			count:      3,
 		},
 		{
 			name: "should return the first seven items from the buffer #2, load new keys and return three items from the buffer #3",
@@ -75,7 +75,7 @@ func TestCachedConsumer(t *testing.T) {
 				err:  nil,
 			},
 			skipBefore: 9,
-			count: 10,
+			count:      10,
 		},
 		{
 			name: "should return four items from the buffer #3",
@@ -84,7 +84,7 @@ func TestCachedConsumer(t *testing.T) {
 				err:  nil,
 			},
 			skipBefore: 19,
-			count: 4,
+			count:      4,
 		},
 		{
 			name: "should return the last item from the buffer #3 and return an error",
@@ -93,7 +93,7 @@ func TestCachedConsumer(t *testing.T) {
 				err:  fakeConsumerError,
 			},
 			skipBefore: 23,
-			count: 10,
+			count:      10,
 		},
 		{
 			name: "should return empty list because there are no more keys",
@@ -102,7 +102,7 @@ func TestCachedConsumer(t *testing.T) {
 				err:  nil,
 			},
 			skipBefore: 24,
-			count: 10,
+			count:      10,
 		},
 	}
 
