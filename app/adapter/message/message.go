@@ -3,15 +3,19 @@ package message
 import (
 	"time"
 
+	"github.com/byliuyang/app/fw"
+
 	"github.com/byliuyang/kgs/app/adapter/template"
 	"github.com/byliuyang/kgs/app/entity"
 )
 
 func NewKeyGenSucceedMessage(
-	tmpl template.Template,
+	tmpl fw.Template,
 	timeElapsed time.Duration,
 ) (entity.Message, error) {
-	body, err := tmpl.Render("key-gen-succeed.gohtml",
+	body, err := tmpl.Render(
+		template.KeyGenSucceedTemplate,
+		template.KeyGenSucceedIncludeTemplates,
 		template.KeyGenSucceedData{
 			TimeElapsed: timeElapsed,
 		})

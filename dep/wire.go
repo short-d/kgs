@@ -5,8 +5,6 @@ package dep
 import (
 	"database/sql"
 
-	"github.com/byliuyang/kgs/app/adapter/rpc/proto"
-
 	"github.com/byliuyang/app/fw"
 	"github.com/byliuyang/app/modern/mdcli"
 	"github.com/byliuyang/app/modern/mddb"
@@ -18,6 +16,8 @@ import (
 	"github.com/byliuyang/app/modern/mdtracer"
 	"github.com/byliuyang/kgs/app/adapter/db"
 	"github.com/byliuyang/kgs/app/adapter/rpc"
+	"github.com/byliuyang/kgs/app/adapter/rpc/proto"
+	"github.com/byliuyang/kgs/app/usecase"
 	"github.com/byliuyang/kgs/app/usecase/keys"
 	"github.com/byliuyang/kgs/app/usecase/keys/gen"
 	"github.com/byliuyang/kgs/app/usecase/notification"
@@ -70,7 +70,7 @@ func InitGRpcService(
 	sqlDB *sql.DB,
 	securityPolicy fw.SecurityPolicy,
 	sendGridAPIKey provider.SendGridAPIKey,
-	templatePattern provider.TemplatePattern,
+	templateRootDir provider.TemplateRootDir,
 	cacheSize provider.CacheSize,
 ) (mdservice.Service, error) {
 	wire.Build(
@@ -93,8 +93,9 @@ func InitGRpcService(
 
 		rpc.NewKeyGenServer,
 		rpc.NewKgsAPI,
+		usecase.NewUseCase,
+		provider.NewHTML,
 		provider.NewEmailNotifier,
-		provider.NewTemplate,
 		keys.NewProducerPersist,
 		provider.NewConsumer,
 		keys.NewConsumerPersist,

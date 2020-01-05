@@ -18,6 +18,7 @@ import (
 	"github.com/byliuyang/app/modern/mdtracer"
 	"github.com/byliuyang/kgs/app/adapter/db"
 	"github.com/byliuyang/kgs/app/adapter/rpc"
+	"github.com/byliuyang/kgs/app/usecase"
 	"github.com/byliuyang/kgs/app/usecase/keys"
 	"github.com/byliuyang/kgs/app/usecase/keys/gen"
 	"github.com/byliuyang/kgs/dep/provider"
@@ -46,14 +47,15 @@ func InitEnvironment() fw.Environment {
 	return goDotEnv
 }
 
-func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddress, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy, sendGridAPIKey provider.SendGridAPIKey, templatePattern provider.TemplatePattern, cacheSize provider.CacheSize) (mdservice.Service, error) {
+func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddress, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy, sendGridAPIKey provider.SendGridAPIKey, templateRootDir provider.TemplateRootDir, cacheSize provider.CacheSize) (mdservice.Service, error) {
+	logger := mdlogger.NewLocal()
+	template := provider.NewHTML(templateRootDir)
 	availableKeySQL := db.NewAvailableKeySQL(sqlDB)
 	v := gen.NewBase62()
 	alphabet, err := gen.NewAlphabet(v)
 	if err != nil {
 		return mdservice.Service{}, err
 	}
-	logger := mdlogger.NewLocal()
 	producerPersist := keys.NewProducerPersist(availableKeySQL, alphabet, logger)
 	allocatedKeySQL := db.NewAllocatedKeySQL(sqlDB)
 	consumerPersist := keys.NewConsumerPersist(availableKeySQL, allocatedKeySQL)
@@ -63,11 +65,8 @@ func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddre
 	}
 	sendGrid := provider.NewSendGrid(sendGridAPIKey)
 	emailNotifier := provider.NewEmailNotifier(name, serviceEmailAddress, sendGrid)
-	template, err := provider.NewTemplate(templatePattern)
-	if err != nil {
-		return mdservice.Service{}, err
-	}
-	keyGenServer := rpc.NewKeyGenServer(producerPersist, consumerCached, emailNotifier, template, logger)
+	useCase := usecase.NewUseCase(logger, template, producerPersist, consumerCached, emailNotifier)
+	keyGenServer := rpc.NewKeyGenServer(useCase)
 	kgsAPI := rpc.NewKgsAPI(keyGenServer)
 	gRpc, err := mdgrpc.NewGRpc(kgsAPI, securityPolicy)
 	if err != nil {

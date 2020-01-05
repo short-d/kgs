@@ -1,9 +1,12 @@
 package provider
 
-import "github.com/byliuyang/kgs/app/adapter/template"
+import (
+	"github.com/byliuyang/app/fw"
+	"github.com/byliuyang/app/modern/mdtemplate"
+)
 
-type TemplatePattern string
+type TemplateRootDir string
 
-func NewTemplate(templatePattern TemplatePattern) (template.Template, error) {
-	return template.NewTemplate(string(templatePattern))
+func NewHTML(rootDir TemplateRootDir) fw.Template {
+	return mdtemplate.NewHTML(string(rootDir))
 }
