@@ -3,9 +3,9 @@ package rpc
 import (
 	"context"
 
-	"github.com/byliuyang/kgs/app/adapter/rpc/proto"
-	"github.com/byliuyang/kgs/app/usecase"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/short-d/kgs/app/adapter/rpc/proto"
+	"github.com/short-d/kgs/app/usecase"
 )
 
 var _ proto.KeyGenServer = (*KeyGenServer)(nil)

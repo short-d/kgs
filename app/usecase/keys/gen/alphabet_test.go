@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/byliuyang/app/mdtest"
-	"github.com/byliuyang/kgs/app/entity"
+	"github.com/short-d/app/mdtest"
+	"github.com/short-d/kgs/app/entity"
 )
 
 func TestNewAlphabet(t *testing.T) {

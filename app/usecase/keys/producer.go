@@ -1,10 +1,10 @@
 package keys
 
 import (
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/kgs/app/entity"
-	"github.com/byliuyang/kgs/app/usecase/keys/gen"
-	"github.com/byliuyang/kgs/app/usecase/repo"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/kgs/app/entity"
+	"github.com/short-d/kgs/app/usecase/keys/gen"
+	"github.com/short-d/kgs/app/usecase/repo"
 )
 
 type Producer interface {

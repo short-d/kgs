@@ -1,8 +1,8 @@
 package rpc
 
 import (
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/kgs/app/adapter/rpc/proto"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/kgs/app/adapter/rpc/proto"
 	"google.golang.org/grpc"
 )
 

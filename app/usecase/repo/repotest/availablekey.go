@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/byliuyang/kgs/app/entity"
-	"github.com/byliuyang/kgs/app/usecase/repo"
+	"github.com/short-d/kgs/app/entity"
+	"github.com/short-d/kgs/app/usecase/repo"
 )
 
 var _ repo.AvailableKey = (*AvailableKeyFake)(nil)

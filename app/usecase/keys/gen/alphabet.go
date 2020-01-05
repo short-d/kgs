@@ -3,8 +3,8 @@ package gen
 import (
 	"errors"
 
-	"github.com/byliuyang/kgs/app/entity"
-	"github.com/byliuyang/kgs/app/usecase/unique"
+	"github.com/short-d/kgs/app/entity"
+	"github.com/short-d/kgs/app/usecase/unique"
 )
 
 var _ Generator = (*Alphabet)(nil)

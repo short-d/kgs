@@ -3,11 +3,10 @@ package main
 import (
 	"strconv"
 
-	"github.com/byliuyang/kgs/app"
-
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/kgs/cmd"
-	"github.com/byliuyang/kgs/dep"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/kgs/app"
+	"github.com/short-d/kgs/cmd"
+	"github.com/short-d/kgs/dep"
 )
 
 func main() {
@@ -34,6 +33,7 @@ func main() {
 	CacheSize := mustInt(env.GetEnv("CACHE_SIZE", "100"))
 
 	config := app.Config{
+		LogLevel:            fw.LogInfo,
 		ServiceName:         serviceName,
 		ServiceEmailAddress: serviceEmailAddress,
 		MigrationRoot:       "app/adapter/db/migration",
