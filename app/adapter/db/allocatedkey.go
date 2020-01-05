@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/byliuyang/kgs/app/adapter/db/table"
-	"github.com/byliuyang/kgs/app/entity"
-	"github.com/byliuyang/kgs/app/usecase/repo"
+	"github.com/short-d/kgs/app/adapter/db/table"
+	"github.com/short-d/kgs/app/entity"
+	"github.com/short-d/kgs/app/usecase/repo"
 )
 
 var _ repo.AllocatedKey = (*AllocatedKeySQL)(nil)

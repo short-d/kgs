@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/kgs/app/adapter/message"
-	"github.com/byliuyang/kgs/app/entity"
-	"github.com/byliuyang/kgs/app/usecase/keys"
-	"github.com/byliuyang/kgs/app/usecase/notification"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/kgs/app/adapter/message"
+	"github.com/short-d/kgs/app/entity"
+	"github.com/short-d/kgs/app/usecase/keys"
+	"github.com/short-d/kgs/app/usecase/notification"
 )
 
 type UseCase struct {

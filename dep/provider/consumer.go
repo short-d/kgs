@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"github.com/byliuyang/kgs/app/usecase/keys"
+	"github.com/short-d/kgs/app/usecase/keys"
 )
 
 // CacheSize specifies the size of the local cache for fetched keys

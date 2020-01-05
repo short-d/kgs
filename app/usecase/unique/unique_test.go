@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/byliuyang/app/mdtest"
+	"github.com/short-d/app/mdtest"
 )
 
 func TestCharacters(t *testing.T) {

@@ -1,8 +1,8 @@
 package provider
 
 import (
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/app/modern/mdtemplate"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/app/modern/mdtemplate"
 )
 
 type TemplateRootDir string

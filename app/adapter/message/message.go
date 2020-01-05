@@ -3,10 +3,10 @@ package message
 import (
 	"time"
 
-	"github.com/byliuyang/app/fw"
+	"github.com/short-d/app/fw"
 
-	"github.com/byliuyang/kgs/app/adapter/template"
-	"github.com/byliuyang/kgs/app/entity"
+	"github.com/short-d/kgs/app/adapter/template"
+	"github.com/short-d/kgs/app/entity"
 )
 
 func NewKeyGenSucceedMessage(

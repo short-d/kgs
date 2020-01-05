@@ -1,12 +1,13 @@
 package app
 
 import (
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/kgs/dep"
-	"github.com/byliuyang/kgs/dep/provider"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/kgs/dep"
+	"github.com/short-d/kgs/dep/provider"
 )
 
 type Config struct {
+	LogLevel            fw.LogLevel
 	ServiceName         string
 	ServiceEmailAddress string
 	MigrationRoot       string
@@ -36,6 +37,7 @@ func Start(
 
 	gRpcService, err := dep.InitGRpcService(
 		config.ServiceName,
+		config.LogLevel,
 		provider.ServiceEmailAddress(config.ServiceEmailAddress),
 		db,
 		securityPolicy,

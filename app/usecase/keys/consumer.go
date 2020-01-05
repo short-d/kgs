@@ -3,7 +3,7 @@ package keys
 import (
 	"sync"
 
-	"github.com/byliuyang/kgs/app/usecase/repo"
+	"github.com/short-d/kgs/app/usecase/repo"
 )
 
 type Consumer interface {
