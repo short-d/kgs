@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/short-d/kgs/app"
-
 	"github.com/short-d/app/fw"
+	"github.com/short-d/kgs/app"
 	"github.com/short-d/kgs/dep"
 )
 

@@ -4,10 +4,9 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/short-d/app/mdtest"
 	"github.com/short-d/kgs/app/entity"
 	"github.com/short-d/kgs/app/usecase/repo/repotest"
-
-	"github.com/short-d/app/mdtest"
 )
 
 func TestCachedConsumer(t *testing.T) {
