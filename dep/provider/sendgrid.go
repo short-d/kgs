@@ -1,6 +1,6 @@
 package provider
 
-import "github.com/byliuyang/app/modern/mdemail"
+import "github.com/short-d/app/modern/mdemail"
 
 type SendGridAPIKey string
 

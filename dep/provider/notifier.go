@@ -1,8 +1,8 @@
 package provider
 
 import (
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/kgs/app/usecase/notification"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/kgs/app/usecase/notification"
 )
 
 type ServiceEmailAddress string

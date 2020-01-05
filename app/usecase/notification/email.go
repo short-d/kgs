@@ -1,8 +1,8 @@
 package notification
 
 import (
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/kgs/app/entity"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/kgs/app/entity"
 )
 
 var _ Notifier = (*EmailNotifier)(nil)

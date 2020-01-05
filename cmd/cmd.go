@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/byliuyang/kgs/app"
-
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/kgs/dep"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/kgs/app"
+	"github.com/short-d/kgs/dep"
 )
 
 // NewRootCmd creates and initializes root command
@@ -35,7 +34,7 @@ func NewRootCmd(
 			},
 		},
 	)
-	startCmd.AddStringFlag(&migrationRoot, "migration", "app/adapter/db/migration", "migration migrations root directory")
+	startCmd.AddStringFlag(&migrationRoot, "migration", "app/adapter/db/migration", "migrations root directory")
 
 	rootCmd := cmdFactory.NewCommand(
 		fw.CommandConfig{
