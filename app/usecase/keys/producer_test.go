@@ -52,7 +52,7 @@ func TestProducer_Produce(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			repo := repotest.NewAvailableKeyFake()
 			gen := gentest.NewGeneratorStub(testCase.keys)
-			logger := mdtest.NewLoggerFake()
+			logger := mdtest.NewLoggerFake(mdtest.FakeLoggerArgs{})
 			producer := NewProducerPersist(repo, gen, &logger)
 			err := producer.Produce(uint(len(testCase.expKeys)))
 
@@ -76,7 +76,7 @@ func ExampleProducer_Produce() {
 			"bc",
 			"cd",
 		})
-	logger := mdtest.NewLoggerFake()
+	logger := mdtest.NewLoggerFake(mdtest.FakeLoggerArgs{})
 	producer := NewProducerPersist(&repo, gen, &logger)
 	err := producer.Produce(1)
 

@@ -108,6 +108,8 @@ github.com/sendgrid/sendgrid-go v3.5.0+incompatible h1:kosbgHyNVYVaqECDYvFVLVD9n
 github.com/sendgrid/sendgrid-go v3.5.0+incompatible/go.mod h1:QRQt+LX/NmgVEvmdRw0VT/QgUn499+iza2FnDca9fg8=
 github.com/short-d/app v0.0.0-20200105111151-ff812388bb09 h1:dba2FxaCL5cn5D2g/9o+9zL8Nqrk6O3kAtI5DSCZ12Y=
 github.com/short-d/app v0.0.0-20200105111151-ff812388bb09/go.mod h1:L3bsuFXGyUFKU05c73y7w2BaksvIIIzQR2hB1cpvJ1g=
+github.com/short-d/app v0.0.0-20200105164223-e5615740ec60 h1:sLUDNbokAgSrfIZc0B6VvYcq0UhecHsy/zaJQKxwTeM=
+github.com/short-d/app v0.0.0-20200105164223-e5615740ec60/go.mod h1:L3bsuFXGyUFKU05c73y7w2BaksvIIIzQR2hB1cpvJ1g=
 github.com/short-d/eventbus v0.0.0-20200105092235-2dfc4be1f9ee h1:LNafZ4caEAcTlgGe9zJ18njsyR+uogkE5+dzZ5LeeAI=
 github.com/short-d/eventbus v0.0.0-20200105092235-2dfc4be1f9ee/go.mod h1:S3Nww0QNubrzHbWTpfzAg8YQLwXuM9GH2cGshOU6GJQ=
 github.com/sirupsen/logrus v1.4.2 h1:SPIRibHv4MatM3XXNO2BJeFLZwZ2LvZgfQ5+UNI2im4=
