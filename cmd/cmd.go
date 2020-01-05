@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/byliuyang/kgs/app"
-
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/kgs/dep"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/kgs/app"
+	"github.com/short-d/kgs/dep"
 )
 
 // NewRootCmd creates and initializes root command

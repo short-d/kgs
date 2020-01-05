@@ -1,9 +1,9 @@
 package keys
 
 import (
-	"github.com/byliuyang/kgs/app/entity"
-	"github.com/byliuyang/kgs/app/usecase/repo"
-	"github.com/byliuyang/kgs/app/usecase/transactional"
+	"github.com/short-d/kgs/app/entity"
+	"github.com/short-d/kgs/app/usecase/repo"
+	"github.com/short-d/kgs/app/usecase/transactional"
 )
 
 type Consumer interface {

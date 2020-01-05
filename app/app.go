@@ -1,18 +1,19 @@
 package app
 
 import (
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/kgs/dep"
-	"github.com/byliuyang/kgs/dep/provider"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/kgs/dep"
+	"github.com/short-d/kgs/dep/provider"
 )
 
 type Config struct {
+	LogLevel            fw.LogLevel
 	ServiceName         string
 	ServiceEmailAddress string
 	MigrationRoot       string
 	GRpcAPIPort         int
 	SendGridAPIKey      string
-	TemplatePattern     string
+	TemplateRootDir     string
 	CacheSize           int
 }
 
@@ -29,18 +30,19 @@ func Start(
 		panic(err)
 	}
 
-	err = dbMigrationTool.Migrate(db, config.MigrationRoot)
+	err = dbMigrationTool.MigrateUp(db, config.MigrationRoot)
 	if err != nil {
 		panic(err)
 	}
 
 	gRpcService, err := dep.InitGRpcService(
 		config.ServiceName,
+		config.LogLevel,
 		provider.ServiceEmailAddress(config.ServiceEmailAddress),
 		db,
 		securityPolicy,
 		provider.SendGridAPIKey(config.SendGridAPIKey),
-		provider.TemplatePattern(config.TemplatePattern),
+		provider.TemplateRootDir(config.TemplateRootDir),
 		provider.CacheSize(config.CacheSize),
 	)
 	if err != nil {

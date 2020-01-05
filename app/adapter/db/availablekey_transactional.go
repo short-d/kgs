@@ -3,10 +3,11 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/byliuyang/kgs/app/adapter/db/table"
-	"github.com/byliuyang/kgs/app/entity"
-	"github.com/byliuyang/kgs/app/usecase/repo"
 	"time"
+
+	"github.com/short-d/kgs/app/adapter/db/table"
+	"github.com/short-d/kgs/app/entity"
+	"github.com/short-d/kgs/app/usecase/repo"
 )
 
 var _ repo.AvailableKey = (*AvailableKeyTransactional)(nil)

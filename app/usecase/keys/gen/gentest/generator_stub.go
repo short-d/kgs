@@ -1,8 +1,8 @@
 package gentest
 
 import (
-	"github.com/byliuyang/kgs/app/entity"
-	"github.com/byliuyang/kgs/app/usecase/keys/gen"
+	"github.com/short-d/kgs/app/entity"
+	"github.com/short-d/kgs/app/usecase/keys/gen"
 )
 
 var _ gen.Generator = (*GeneratorStub)(nil)

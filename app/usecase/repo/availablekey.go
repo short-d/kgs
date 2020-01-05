@@ -1,6 +1,6 @@
 package repo
 
-import "github.com/byliuyang/kgs/app/entity"
+import "github.com/short-d/kgs/app/entity"
 
 // AvailableKey represents repository persisting available unique keys
 type AvailableKey interface {

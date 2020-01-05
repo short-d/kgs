@@ -3,29 +3,32 @@
 package dep
 
 import (
-	"errors"
 	"database/sql"
-	"github.com/byliuyang/kgs/app/usecase/transactional"
+	"errors"
 
-	"github.com/byliuyang/kgs/app/adapter/rpc/proto"
-
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/app/modern/mdcli"
-	"github.com/byliuyang/app/modern/mddb"
-	"github.com/byliuyang/app/modern/mdemail"
-	"github.com/byliuyang/app/modern/mdenv"
-	"github.com/byliuyang/app/modern/mdgrpc"
-	"github.com/byliuyang/app/modern/mdlogger"
-	"github.com/byliuyang/app/modern/mdservice"
-	"github.com/byliuyang/app/modern/mdtracer"
-	"github.com/byliuyang/kgs/app/adapter/db"
-	"github.com/byliuyang/kgs/app/adapter/rpc"
-	"github.com/byliuyang/kgs/app/usecase/keys"
-	"github.com/byliuyang/kgs/app/usecase/keys/gen"
-	"github.com/byliuyang/kgs/app/usecase/notification"
-	"github.com/byliuyang/kgs/app/usecase/repo"
-	"github.com/byliuyang/kgs/dep/provider"
 	"github.com/google/wire"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/app/modern/mdcli"
+	"github.com/short-d/app/modern/mddb"
+	"github.com/short-d/app/modern/mdemail"
+	"github.com/short-d/app/modern/mdenv"
+	"github.com/short-d/app/modern/mdgrpc"
+	"github.com/short-d/app/modern/mdio"
+	"github.com/short-d/app/modern/mdlogger"
+	"github.com/short-d/app/modern/mdruntime"
+	"github.com/short-d/app/modern/mdservice"
+	"github.com/short-d/app/modern/mdtimer"
+	"github.com/short-d/app/modern/mdtracer"
+	"github.com/short-d/kgs/app/adapter/db"
+	"github.com/short-d/kgs/app/adapter/rpc"
+	"github.com/short-d/kgs/app/adapter/rpc/proto"
+	"github.com/short-d/kgs/app/usecase"
+	"github.com/short-d/kgs/app/usecase/keys"
+	"github.com/short-d/kgs/app/usecase/keys/gen"
+	"github.com/short-d/kgs/app/usecase/notification"
+	"github.com/short-d/kgs/app/usecase/repo"
+	"github.com/short-d/kgs/app/usecase/transactional"
+	"github.com/short-d/kgs/dep/provider"
 )
 
 func InitCommandFactory() fw.CommandFactory {
@@ -86,20 +89,24 @@ func availableKey() keys.AvailableKeyRepoFactory {
 }
 
 var observabilitySet = wire.NewSet(
+	wire.Bind(new(fw.Logger), new(mdlogger.Local)),
 	mdlogger.NewLocal,
 	mdtracer.NewLocal,
 )
 
 func InitGRpcService(
 	name string,
+	logLevel fw.LogLevel,
 	serviceEmailAddress provider.ServiceEmailAddress,
 	sqlDB *sql.DB,
 	securityPolicy fw.SecurityPolicy,
 	sendGridAPIKey provider.SendGridAPIKey,
-	templatePattern provider.TemplatePattern,
+	templateRootDir provider.TemplateRootDir,
 	cacheSize provider.CacheSize,
 ) (mdservice.Service, error) {
 	wire.Build(
+		wire.Bind(new(fw.StdOut), new(mdio.StdOut)),
+		wire.Bind(new(fw.ProgramRuntime), new(mdruntime.BuildIn)),
 		wire.Bind(new(fw.Server), new(mdgrpc.GRpc)),
 		wire.Bind(new(fw.GRpcAPI), new(rpc.KgsAPI)),
 		wire.Bind(new(fw.EmailSender), new(mdemail.SendGrid)),
@@ -112,14 +119,18 @@ func InitGRpcService(
 
 		observabilitySet,
 
+		mdio.NewBuildInStdOut,
+		mdruntime.NewBuildIn,
+		mdtimer.NewTimer,
 		mdgrpc.NewGRpc,
 		mdservice.New,
 		provider.NewSendGrid,
 
 		rpc.NewKeyGenServer,
 		rpc.NewKgsAPI,
+		usecase.NewUseCase,
+		provider.NewHTML,
 		provider.NewEmailNotifier,
-		provider.NewTemplate,
 		keys.NewProducerPersist,
 		provider.NewConsumer,
 		keys.NewConsumerPersist,

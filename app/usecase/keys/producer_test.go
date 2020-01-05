@@ -2,15 +2,15 @@ package keys
 
 import (
 	"fmt"
-	"github.com/byliuyang/kgs/app/usecase/repo"
-	"github.com/byliuyang/kgs/app/usecase/transactional"
-	"github.com/byliuyang/kgs/app/usecase/transactional/transactionaltest"
 	"testing"
 
-	"github.com/byliuyang/app/mdtest"
-	"github.com/byliuyang/kgs/app/entity"
-	"github.com/byliuyang/kgs/app/usecase/keys/gen/gentest"
-	"github.com/byliuyang/kgs/app/usecase/repo/repotest"
+	"github.com/short-d/app/mdtest"
+	"github.com/short-d/kgs/app/entity"
+	"github.com/short-d/kgs/app/usecase/keys/gen/gentest"
+	"github.com/short-d/kgs/app/usecase/repo"
+	"github.com/short-d/kgs/app/usecase/repo/repotest"
+	"github.com/short-d/kgs/app/usecase/transactional"
+	"github.com/short-d/kgs/app/usecase/transactional/transactionaltest"
 )
 
 func TestProducer_Produce(t *testing.T) {
@@ -55,7 +55,7 @@ func TestProducer_Produce(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			availableKeysRepo := repotest.NewAvailableKeyFake()
 			gen := gentest.NewGeneratorStub(testCase.keys)
-			logger := mdtest.NewLoggerFake()
+			logger := mdtest.NewLoggerFake(mdtest.FakeLoggerArgs{})
 
 			producer := NewProducerPersist(
 				func(tx transactional.Transaction) (key repo.AvailableKey, e error) {
@@ -67,7 +67,6 @@ func TestProducer_Produce(t *testing.T) {
 			)
 
 			err := producer.Produce(uint(len(testCase.expKeys)))
-
 			if testCase.hasErr {
 				mdtest.NotEqual(t, nil, err)
 			} else {
@@ -89,7 +88,7 @@ func ExampleProducer_Produce() {
 			"cd",
 		},
 	)
-	logger := mdtest.NewLoggerFake()
+	logger := mdtest.NewLoggerFake(mdtest.FakeLoggerArgs{})
 
 	producer := NewProducerPersist(
 		func(tx transactional.Transaction) (key repo.AvailableKey, e error) {
@@ -99,7 +98,6 @@ func ExampleProducer_Produce() {
 		gen,
 		&logger,
 	)
-
 	err := producer.Produce(1)
 
 	fmt.Println(err)

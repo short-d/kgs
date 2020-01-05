@@ -8,22 +8,27 @@ package dep
 import (
 	"database/sql"
 	"errors"
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/app/modern/mdcli"
-	"github.com/byliuyang/app/modern/mddb"
-	"github.com/byliuyang/app/modern/mdenv"
-	"github.com/byliuyang/app/modern/mdgrpc"
-	"github.com/byliuyang/app/modern/mdlogger"
-	"github.com/byliuyang/app/modern/mdservice"
-	"github.com/byliuyang/app/modern/mdtracer"
-	"github.com/byliuyang/kgs/app/adapter/db"
-	"github.com/byliuyang/kgs/app/adapter/rpc"
-	"github.com/byliuyang/kgs/app/usecase/keys"
-	"github.com/byliuyang/kgs/app/usecase/keys/gen"
-	"github.com/byliuyang/kgs/app/usecase/repo"
-	"github.com/byliuyang/kgs/app/usecase/transactional"
-	"github.com/byliuyang/kgs/dep/provider"
+
 	"github.com/google/wire"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/app/modern/mdcli"
+	"github.com/short-d/app/modern/mddb"
+	"github.com/short-d/app/modern/mdenv"
+	"github.com/short-d/app/modern/mdgrpc"
+	"github.com/short-d/app/modern/mdio"
+	"github.com/short-d/app/modern/mdlogger"
+	"github.com/short-d/app/modern/mdruntime"
+	"github.com/short-d/app/modern/mdservice"
+	"github.com/short-d/app/modern/mdtimer"
+	"github.com/short-d/app/modern/mdtracer"
+	"github.com/short-d/kgs/app/adapter/db"
+	"github.com/short-d/kgs/app/adapter/rpc"
+	"github.com/short-d/kgs/app/usecase"
+	"github.com/short-d/kgs/app/usecase/keys"
+	"github.com/short-d/kgs/app/usecase/keys/gen"
+	"github.com/short-d/kgs/app/usecase/repo"
+	"github.com/short-d/kgs/app/usecase/transactional"
+	"github.com/short-d/kgs/dep/provider"
 )
 
 // Injectors from wire.go:
@@ -48,7 +53,12 @@ func InitEnvironment() fw.Environment {
 	return goDotEnv
 }
 
-func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddress, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy, sendGridAPIKey provider.SendGridAPIKey, templatePattern provider.TemplatePattern, cacheSize provider.CacheSize) (mdservice.Service, error) {
+func InitGRpcService(name string, logLevel fw.LogLevel, serviceEmailAddress provider.ServiceEmailAddress, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy, sendGridAPIKey provider.SendGridAPIKey, templateRootDir provider.TemplateRootDir, cacheSize provider.CacheSize) (mdservice.Service, error) {
+	stdOut := mdio.NewBuildInStdOut()
+	timer := mdtimer.NewTimer()
+	buildIn := mdruntime.NewBuildIn()
+	local := mdlogger.NewLocal(name, logLevel, stdOut, timer, buildIn)
+	template := provider.NewHTML(templateRootDir)
 	availableKeyRepoFactory := availableKey()
 	factorySQL := db.NewFactorySQL(sqlDB)
 	v := gen.NewBase62()
@@ -56,8 +66,7 @@ func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddre
 	if err != nil {
 		return mdservice.Service{}, err
 	}
-	logger := mdlogger.NewLocal()
-	producerPersist := keys.NewProducerPersist(availableKeyRepoFactory, factorySQL, alphabet, logger)
+	producerPersist := keys.NewProducerPersist(availableKeyRepoFactory, factorySQL, alphabet, local)
 	allocatedKeyRepoFactory := allocatedKey()
 	consumerPersist := keys.NewConsumerPersist(availableKeyRepoFactory, allocatedKeyRepoFactory, factorySQL)
 	consumerCached, err := provider.NewConsumer(cacheSize, consumerPersist)
@@ -66,17 +75,14 @@ func InitGRpcService(name string, serviceEmailAddress provider.ServiceEmailAddre
 	}
 	sendGrid := provider.NewSendGrid(sendGridAPIKey)
 	emailNotifier := provider.NewEmailNotifier(name, serviceEmailAddress, sendGrid)
-	template, err := provider.NewTemplate(templatePattern)
-	if err != nil {
-		return mdservice.Service{}, err
-	}
-	keyGenServer := rpc.NewKeyGenServer(producerPersist, consumerCached, emailNotifier, template, logger)
+	useCase := usecase.NewUseCase(local, template, producerPersist, consumerCached, emailNotifier)
+	keyGenServer := rpc.NewKeyGenServer(useCase)
 	kgsAPI := rpc.NewKgsAPI(keyGenServer)
 	gRpc, err := mdgrpc.NewGRpc(kgsAPI, securityPolicy)
 	if err != nil {
 		return mdservice.Service{}, err
 	}
-	service := mdservice.New(name, gRpc, logger)
+	service := mdservice.New(name, gRpc, local)
 	return service, nil
 }
 
@@ -106,4 +112,4 @@ func availableKey() keys.AvailableKeyRepoFactory {
 	}
 }
 
-var observabilitySet = wire.NewSet(mdlogger.NewLocal, mdtracer.NewLocal)
+var observabilitySet = wire.NewSet(wire.Bind(new(fw.Logger), new(mdlogger.Local)), mdlogger.NewLocal, mdtracer.NewLocal)

@@ -1,10 +1,10 @@
 package keys
 
 import (
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/kgs/app/entity"
-	"github.com/byliuyang/kgs/app/usecase/keys/gen"
-	"github.com/byliuyang/kgs/app/usecase/transactional"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/kgs/app/entity"
+	"github.com/short-d/kgs/app/usecase/keys/gen"
+	"github.com/short-d/kgs/app/usecase/transactional"
 )
 
 type Producer interface {
@@ -58,8 +58,8 @@ func NewProducerPersist(
 ) ProducerPersist {
 	return ProducerPersist{
 		availableKeyFactory: availableKeyFactory,
-		transactionFactory: transactionFactory,
-		keyGen: keyGen,
-		logger: logger,
+		transactionFactory:  transactionFactory,
+		keyGen:              keyGen,
+		logger:              logger,
 	}
 }

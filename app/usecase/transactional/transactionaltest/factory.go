@@ -1,7 +1,7 @@
 package transactionaltest
 
 import (
-	"github.com/byliuyang/kgs/app/usecase/transactional"
+	"github.com/short-d/kgs/app/usecase/transactional"
 )
 
 var _ transactional.Factory = (*FactoryFake)(nil)

@@ -1,6 +1,6 @@
 package transactionaltest
 
-import "github.com/byliuyang/kgs/app/usecase/transactional"
+import "github.com/short-d/kgs/app/usecase/transactional"
 
 var _ transactional.Transaction = (*TransactionFake)(nil)
 
