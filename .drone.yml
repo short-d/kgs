@@ -75,6 +75,7 @@ steps:
         from_secret: DOCKERHUB_PASSWORD
     commands:
       - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+      - docker tag kgs:latest $DOCKERHUB_USERNAME/kgs:latest
       - docker push $DOCKERHUB_USERNAME/kgs:latest
     volumes:
       - name: docker
