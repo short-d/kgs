@@ -1,5 +1,10 @@
 package event
 
+import "errors"
+
+// ErrDispatcherIsClosed represents that there is no way to perform manipulations with event dispatcher
+var ErrDispatcherIsClosed = errors.New("failed to perform the operation, the dispatcher is closed")
+
 type Dispatcher interface {
 	Emitter
 	Subscriber
@@ -34,9 +39,9 @@ type Subscriber interface {
 }
 
 // BindListeners is a helper function registers the list of listeners to the given event dispatcher
-func BindListeners(dispatcher Dispatcher, list []Listener) error {
+func BindListeners(subscriber Subscriber, list []Listener) error {
 	for _, listener := range list {
-		if err := dispatcher.Subscribe(listener.GetSubscribedEvent(), listener); err != nil {
+		if err := subscriber.Subscribe(listener.GetSubscribedEvent(), listener); err != nil {
 			return err
 		}
 	}

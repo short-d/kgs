@@ -4,6 +4,8 @@ import (
 	"sync/atomic"
 	"testing"
 
+	"github.com/asaskevich/EventBus"
+
 	"github.com/short-d/app/mdtest"
 )
 
@@ -103,7 +105,7 @@ func TestEventDispatcher_Dispatch(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			eventDispatcher := NewEventDispatcher()
+			eventDispatcher := NewEventDispatcher(EventBus.New())
 
 			err := BindListeners(eventDispatcher, testCase.listeners)
 			mdtest.Equal(t, nil, err)
@@ -127,22 +129,24 @@ func TestEventDispatcher_Dispatch(t *testing.T) {
 }
 
 func TestEventDispatcher_Close(t *testing.T) {
-	eventDispatcher := NewEventDispatcher()
-	listener := &fakeListener{name: "event1"}
+	ev := fakeEvent("event1")
+	eventDispatcher := NewEventDispatcher(EventBus.New())
+	listener := &fakeListener{name: ev.GetName()}
+
 	_ = BindListeners(eventDispatcher, []Listener{listener})
 
-	err := eventDispatcher.Unsubscribe("event1", listener)
-	mdtest.Equal(t, nil, err)
-
-	err = eventDispatcher.Dispatch(fakeEvent("event1"))
+	err := eventDispatcher.Dispatch(ev)
 	mdtest.Equal(t, nil, err)
 
 	err = eventDispatcher.Close()
 	mdtest.Equal(t, nil, err)
 
+	err = eventDispatcher.Dispatch(ev)
+	mdtest.Equal(t, ErrDispatcherIsClosed, err)
+
 	// there was no any listener call, because we have unsubscribed the listener
-	mdtest.Equal(t, 0, listener.actualCalls)
-	mdtest.Equal(t, ErrDispatcherIsClosed, eventDispatcher.Dispatch(fakeEvent("event1")))
+	mdtest.Equal(t, int32(1), listener.actualCalls)
+	mdtest.Equal(t, ErrDispatcherIsClosed, eventDispatcher.Close())
 }
 
 type fakeListener struct {

@@ -1,7 +1,6 @@
 package event
 
 import (
-	"errors"
 	"sync"
 
 	"github.com/asaskevich/EventBus"
@@ -10,12 +9,9 @@ import (
 var _ Dispatcher = (*EventDispatcher)(nil)
 var _ Subscriber = (*EventDispatcher)(nil)
 
-// ErrDispatcherIsClosed tells that there is no way to perform manipulations with event dispatcher
-var ErrDispatcherIsClosed = errors.New("failed to perform the operation, the dispatcher is closed")
-
 // EventDispatcher publishes an event to all its subscribers
 type EventDispatcher struct {
-	bus      EventBus.Bus
+	eventBus EventBus.Bus
 	lock     sync.RWMutex
 	isClosed bool
 }
@@ -28,7 +24,7 @@ func (d *EventDispatcher) Dispatch(event Event) error {
 		return ErrDispatcherIsClosed
 	}
 
-	d.bus.Publish(event.GetName(), event)
+	d.eventBus.Publish(event.GetName(), event)
 
 	return nil
 }
@@ -41,7 +37,7 @@ func (d *EventDispatcher) Subscribe(eventName string, listener Listener) error {
 		return ErrDispatcherIsClosed
 	}
 
-	return d.bus.SubscribeAsync(eventName, listener.Handle, false)
+	return d.eventBus.SubscribeAsync(eventName, listener.Handle, false)
 }
 
 func (d *EventDispatcher) Unsubscribe(eventName string, listener Listener) error {
@@ -52,7 +48,7 @@ func (d *EventDispatcher) Unsubscribe(eventName string, listener Listener) error
 		return ErrDispatcherIsClosed
 	}
 
-	return d.bus.Unsubscribe(eventName, listener.Handle)
+	return d.eventBus.Unsubscribe(eventName, listener.Handle)
 }
 
 func (d *EventDispatcher) Close() error {
@@ -64,15 +60,15 @@ func (d *EventDispatcher) Close() error {
 	}
 
 	d.isClosed = true
-	d.bus.WaitAsync()
+	d.eventBus.WaitAsync()
 
 	return nil
 }
 
 // NewEventDispatcher creates a new instance of EventDispatcher type
-func NewEventDispatcher() *EventDispatcher {
+func NewEventDispatcher(eventBus EventBus.Bus) *EventDispatcher {
 	return &EventDispatcher{
-		bus:      EventBus.New(),
+		eventBus: eventBus,
 		lock:     sync.RWMutex{},
 		isClosed: false,
 	}
