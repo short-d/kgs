@@ -7,6 +7,7 @@ package dep
 
 import (
 	"database/sql"
+
 	"github.com/asaskevich/EventBus"
 	"github.com/google/wire"
 	"github.com/short-d/app/fw"

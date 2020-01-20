@@ -1,9 +1,10 @@
 package notification
 
 import (
+	"time"
+
 	"github.com/short-d/app/fw"
 	"github.com/short-d/kgs/app/entity"
-	"time"
 )
 
 const onKeyPopulatedEventName = "onKeyPopulatedEvent"

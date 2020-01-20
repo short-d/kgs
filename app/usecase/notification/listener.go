@@ -3,6 +3,7 @@ package notification
 import (
 	"errors"
 	"fmt"
+
 	"github.com/short-d/app/fw"
 	"github.com/short-d/kgs/app/adapter/message"
 )
