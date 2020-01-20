@@ -16,6 +16,7 @@ func NewRootCmd(
 	dbConnector fw.DBConnector,
 	dbMigrationTool fw.DBMigrationTool,
 	securityPolicy fw.SecurityPolicy,
+	eventDispatcher fw.Dispatcher,
 ) fw.Command {
 	var migrationRoot string
 
@@ -30,6 +31,7 @@ func NewRootCmd(
 					dbConnector,
 					dbMigrationTool,
 					securityPolicy,
+					eventDispatcher,
 				)
 			},
 		},

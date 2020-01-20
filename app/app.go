@@ -24,6 +24,7 @@ func Start(
 	dbConnector fw.DBConnector,
 	dbMigrationTool fw.DBMigrationTool,
 	securityPolicy fw.SecurityPolicy,
+	eventDispatcher fw.Dispatcher,
 ) {
 	db, err := dbConnector.Connect(dbConfig)
 	if err != nil {
@@ -44,6 +45,7 @@ func Start(
 		provider.SendGridAPIKey(config.SendGridAPIKey),
 		provider.TemplateRootDir(config.TemplateRootDir),
 		provider.CacheSize(config.CacheSize),
+		eventDispatcher,
 	)
 	if err != nil {
 		panic(err)

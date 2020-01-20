@@ -59,12 +59,19 @@ func main() {
 		KeyFilePath:         keyFilePath,
 	}
 
+	eventDispatcher := dep.InitEventDispatcher()
+
+	defer func() {
+		_ = eventDispatcher.Close()
+	}()
+
 	rootCmd := cmd.NewRootCmd(
 		config,
 		dbConfig,
 		dbConnector,
 		dbMigrationTool,
 		securityPolicy,
+		eventDispatcher,
 	)
 	cmd.Execute(rootCmd)
 }
