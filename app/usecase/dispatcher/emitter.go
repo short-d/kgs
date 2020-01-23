@@ -1,4 +1,4 @@
-package provider
+package dispatcher
 
 import (
 	"github.com/short-d/app/fw"

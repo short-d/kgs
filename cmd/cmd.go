@@ -33,6 +33,10 @@ func NewRootCmd(
 					securityPolicy,
 					eventDispatcher,
 				)
+
+				if err := eventDispatcher.Close(); err != nil {
+					panic(err)
+				}
 			},
 		},
 	)

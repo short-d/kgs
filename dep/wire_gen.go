@@ -8,13 +8,11 @@ package dep
 import (
 	"database/sql"
 
-	"github.com/asaskevich/EventBus"
 	"github.com/google/wire"
 	"github.com/short-d/app/fw"
 	"github.com/short-d/app/modern/mdcli"
 	"github.com/short-d/app/modern/mddb"
 	"github.com/short-d/app/modern/mdenv"
-	"github.com/short-d/app/modern/mdevent"
 	"github.com/short-d/app/modern/mdgrpc"
 	"github.com/short-d/app/modern/mdio"
 	"github.com/short-d/app/modern/mdlogger"
@@ -25,6 +23,7 @@ import (
 	"github.com/short-d/kgs/app/adapter/db"
 	"github.com/short-d/kgs/app/adapter/rpc"
 	"github.com/short-d/kgs/app/usecase"
+	"github.com/short-d/kgs/app/usecase/dispatcher"
 	"github.com/short-d/kgs/app/usecase/keys"
 	"github.com/short-d/kgs/app/usecase/keys/gen"
 	"github.com/short-d/kgs/dep/provider"
@@ -52,11 +51,6 @@ func InitEnvironment() fw.Environment {
 	return goDotEnv
 }
 
-func InitEventDispatcher() fw.Dispatcher {
-	eventDispatcher := mdevent.NewEventDispatcher(EventBus.New())
-	return eventDispatcher
-}
-
 func InitGRpcService(name string, logLevel fw.LogLevel, serviceEmailAddress provider.ServiceEmailAddress, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy, sendGridAPIKey provider.SendGridAPIKey, templateRootDir provider.TemplateRootDir, cacheSize provider.CacheSize, eventDispatcher fw.Dispatcher) (mdservice.Service, error) {
 	stdOut := mdio.NewBuildInStdOut()
 	timer := mdtimer.NewTimer()
@@ -78,7 +72,7 @@ func InitGRpcService(name string, logLevel fw.LogLevel, serviceEmailAddress prov
 	template := provider.NewHTML(templateRootDir)
 	sendGrid := provider.NewSendGrid(sendGridAPIKey)
 	emailNotifierEventListener := provider.NewEmailNotifierEventListener(local, template, name, serviceEmailAddress, sendGrid)
-	emitter, err := provider.NewEventEmitter(eventDispatcher, emailNotifierEventListener)
+	emitter, err := dispatcher.NewEventEmitter(eventDispatcher, emailNotifierEventListener)
 	if err != nil {
 		return mdservice.Service{}, err
 	}

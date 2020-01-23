@@ -3,6 +3,9 @@ package main
 import (
 	"strconv"
 
+	"github.com/asaskevich/EventBus"
+	"github.com/short-d/app/modern/mdevent"
+
 	"github.com/short-d/app/fw"
 	"github.com/short-d/kgs/app"
 	"github.com/short-d/kgs/cmd"
@@ -59,11 +62,7 @@ func main() {
 		KeyFilePath:         keyFilePath,
 	}
 
-	eventDispatcher := dep.InitEventDispatcher()
-
-	defer func() {
-		_ = eventDispatcher.Close()
-	}()
+	eventDispatcher := mdevent.NewEventDispatcher(EventBus.New())
 
 	rootCmd := cmd.NewRootCmd(
 		config,

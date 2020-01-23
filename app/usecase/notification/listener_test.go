@@ -4,10 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/asaskevich/EventBus"
 	"github.com/short-d/app/fw"
 	"github.com/short-d/app/mdtest"
-	"github.com/short-d/app/modern/mdevent"
 	"github.com/short-d/kgs/app/entity"
 )
 
@@ -23,19 +21,13 @@ func TestEmailEventHandle(t *testing.T) {
 		&sender,
 	)
 
-	dispatcher := mdevent.NewEventDispatcher(EventBus.New())
-	mdtest.Equal(t, nil, dispatcher.Subscribe(listener))
-
-	err := dispatcher.Dispatch(OnKeyPopulatedEvent{
+	listener.Handle(OnKeyPopulatedEvent{
 		TimeElapsed: time.Second,
 		Requester: entity.Requester{
 			Name:  "",
 			Email: "recipientEmailAddress",
 		},
 	})
-
-	mdtest.Equal(t, nil, err)
-	mdtest.Equal(t, nil, dispatcher.Close())
 
 	expected := fw.Email{
 		FromName:    "serviceName",
@@ -49,12 +41,14 @@ func TestEmailEventHandle(t *testing.T) {
 	mdtest.Equal(t, expected, sender.email)
 }
 
+// TODO move into mdtest to encourage reuse
 type fakeTemplator struct{}
 
 func (t fakeTemplator) Render(renderTemplate string, includeTemplates []string, data interface{}) (string, error) {
 	return "contentHTML", nil
 }
 
+// TODO move into mdtest to encourage reuse
 type fakeEmailSender struct {
 	email fw.Email
 }

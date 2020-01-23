@@ -22,6 +22,7 @@ import (
 	"github.com/short-d/kgs/app/adapter/rpc"
 	"github.com/short-d/kgs/app/adapter/rpc/proto"
 	"github.com/short-d/kgs/app/usecase"
+	"github.com/short-d/kgs/app/usecase/dispatcher"
 	"github.com/short-d/kgs/app/usecase/keys"
 	"github.com/short-d/kgs/app/usecase/keys/gen"
 	"github.com/short-d/kgs/app/usecase/repo"
@@ -94,7 +95,7 @@ func InitGRpcService(
 		observabilitySet,
 
 		// event listener subscription
-		provider.NewEventEmitter,
+		dispatcher.NewEventEmitter,
 		provider.NewEmailNotifierEventListener,
 
 		mdio.NewBuildInStdOut,
