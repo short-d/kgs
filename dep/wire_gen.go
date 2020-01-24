@@ -23,6 +23,7 @@ import (
 	"github.com/short-d/kgs/app/adapter/db"
 	"github.com/short-d/kgs/app/adapter/rpc"
 	"github.com/short-d/kgs/app/usecase"
+	"github.com/short-d/kgs/app/usecase/dispatcher"
 	"github.com/short-d/kgs/app/usecase/keys"
 	"github.com/short-d/kgs/app/usecase/keys/gen"
 	"github.com/short-d/kgs/dep/provider"
@@ -50,12 +51,11 @@ func InitEnvironment() fw.Environment {
 	return goDotEnv
 }
 
-func InitGRpcService(name string, logLevel fw.LogLevel, serviceEmailAddress provider.ServiceEmailAddress, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy, sendGridAPIKey provider.SendGridAPIKey, templateRootDir provider.TemplateRootDir, cacheSize provider.CacheSize) (mdservice.Service, error) {
+func InitGRpcService(name string, logLevel fw.LogLevel, serviceEmailAddress provider.ServiceEmailAddress, sqlDB *sql.DB, securityPolicy fw.SecurityPolicy, sendGridAPIKey provider.SendGridAPIKey, templateRootDir provider.TemplateRootDir, cacheSize provider.CacheSize, eventDispatcher fw.Dispatcher) (mdservice.Service, error) {
 	stdOut := mdio.NewBuildInStdOut()
 	timer := mdtimer.NewTimer()
 	buildIn := mdruntime.NewBuildIn()
 	local := mdlogger.NewLocal(name, logLevel, stdOut, timer, buildIn)
-	template := provider.NewHTML(templateRootDir)
 	availableKeySQL := db.NewAvailableKeySQL(sqlDB)
 	v := gen.NewBase62()
 	alphabet, err := gen.NewAlphabet(v)
@@ -69,9 +69,14 @@ func InitGRpcService(name string, logLevel fw.LogLevel, serviceEmailAddress prov
 	if err != nil {
 		return mdservice.Service{}, err
 	}
+	template := provider.NewHTML(templateRootDir)
 	sendGrid := provider.NewSendGrid(sendGridAPIKey)
-	emailNotifier := provider.NewEmailNotifier(name, serviceEmailAddress, sendGrid)
-	useCase := usecase.NewUseCase(local, template, producerPersist, consumerCached, emailNotifier)
+	emailNotifierEventListener := provider.NewEmailNotifierEventListener(local, template, name, serviceEmailAddress, sendGrid)
+	emitter, err := dispatcher.NewEventEmitter(eventDispatcher, emailNotifierEventListener)
+	if err != nil {
+		return mdservice.Service{}, err
+	}
+	useCase := usecase.NewUseCase(local, producerPersist, consumerCached, emitter)
 	keyGenServer := rpc.NewKeyGenServer(useCase)
 	kgsAPI := rpc.NewKgsAPI(keyGenServer)
 	gRpc, err := mdgrpc.NewGRpc(kgsAPI, securityPolicy)
