@@ -41,14 +41,14 @@ func TestEmailEventHandle(t *testing.T) {
 	mdtest.Equal(t, expected, sender.email)
 }
 
-// TODO move into mdtest to encourage reuse
+// TODO(issue#55): move into mdtest to encourage reuse
 type fakeTemplator struct{}
 
 func (t fakeTemplator) Render(renderTemplate string, includeTemplates []string, data interface{}) (string, error) {
 	return "contentHTML", nil
 }
 
-// TODO move into mdtest to encourage reuse
+// TODO(issue#55): move into mdtest to encourage reuse
 type fakeEmailSender struct {
 	email fw.Email
 }

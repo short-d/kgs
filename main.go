@@ -5,7 +5,6 @@ import (
 
 	"github.com/asaskevich/EventBus"
 	"github.com/short-d/app/modern/mdevent"
-
 	"github.com/short-d/app/fw"
 	"github.com/short-d/kgs/app"
 	"github.com/short-d/kgs/cmd"
