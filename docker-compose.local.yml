@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  app:
+    image: golang:1.13.1
+    volumes:
+      - .:/opt/kgs
+    working_dir: /opt/kgs
+    user: "${U_ID}:${G_ID}"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=kgs
+      - ENABLE_ENCRYPTION=false
+      - GRPC_API_PORT=8080
+      - GOCACHE=/tmp/.cache
+    networks:
+      - default
+    command: bash -c "./scripts/wait-for-it -s $$DB_HOST:$$DB_PORT -- go run main.go start"
+
+  db:
+    image: postgres:12.1-alpine
+    ports:
+      - 5432:5431 # in order to prevent port binding for a running postgres on the local machine
+    environment:
+      - POSTGRES_DB=kgs
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
