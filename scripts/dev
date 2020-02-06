@@ -2,6 +2,4 @@
 
 set -e -x
 
-G_ID=$(id -g) \
-U_ID=$(id -u) \
 docker-compose -p kgs_dev -f docker-compose.local.yml up
