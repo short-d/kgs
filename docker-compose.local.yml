@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  app:
+    build:
+      dockerfile: Dockerfile-dev
+      context: .
+    volumes:
+      - .:/opt/kgs
+    working_dir: /opt/kgs
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=kgs
+      - ENABLE_ENCRYPTION=false
+      - GRPC_API_PORT=8080
+    networks:
+      - default
+    command: [
+      "./scripts/wait-for-it", "-s", "-t", "0", "db:5432", "--",
+      "go", "run", "main.go", "start"
+    ]
+  db:
+    image: postgres:12.1-alpine
+    ports:
+      - 5431:5432 # in order to prevent port binding for a running postgres on the local machine
+    environment:
+      - POSTGRES_DB=kgs
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
