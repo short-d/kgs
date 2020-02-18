@@ -13,4 +13,4 @@ RUN go mod verify
 
 COPY . .
 
-CMD go run main.go start
+CMD ["go", "run", "main.go", "start"]
