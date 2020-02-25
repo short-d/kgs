@@ -55,7 +55,6 @@ func Start(
 
 	go func() {
 		<- ctx.Done()
-
 		gRpcService.Stop()
 	}()
 

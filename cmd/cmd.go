@@ -73,10 +73,13 @@ func Execute(rootCmd fw.Command) {
 	}
 }
 
-// listenToSystemSignals handles OS signals
 func listenToSystemSignals(cancelFn context.CancelFunc, onInterrupt func()) {
 	signalChan := make(chan os.Signal, 1)
-	// listen to Interrupt
+
+	// listen to signals in order to provide a mechanism for an orderly, graceful shutdown,
+	// but to first allow it a chance to clean up.
+	// SIGINT is the interrupt signal. The terminal sends it to the foreground process when the user presses ctrl-c
+	// SIGTERM is the termination signal. The default behaviour is to terminate the process.
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
 
 	sgn := <-signalChan
