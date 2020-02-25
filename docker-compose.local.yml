@@ -20,7 +20,7 @@ services:
       - default
     command: [
       "./scripts/wait-for-it", "-s", "-t", "0", "db:5432", "--",
-      "go", "run", "main.go", "start"
+      "sh", "-c", "go build -o build/app && ./build/app start"
     ]
   db:
     image: postgres:12.1-alpine

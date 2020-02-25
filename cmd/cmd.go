@@ -1,8 +1,12 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/short-d/app/fw"
 	"github.com/short-d/kgs/app"
@@ -25,7 +29,10 @@ func NewRootCmd(
 		fw.CommandConfig{
 			Usage: "start",
 			OnExecute: func(cmd *fw.Command, args []string) {
+				ctx, cancelFn := context.WithCancel(context.Background())
+
 				app.Start(
+					ctx,
 					config,
 					dbConfig,
 					dbConnector,
@@ -34,9 +41,11 @@ func NewRootCmd(
 					eventDispatcher,
 				)
 
-				if err := eventDispatcher.Close(); err != nil {
-					panic(err)
-				}
+				listenToSystemSignals(cancelFn, func() {
+					if err := eventDispatcher.Close(); err != nil {
+						panic(err)
+					}
+				})
 			},
 		},
 	)
@@ -62,4 +71,20 @@ func Execute(rootCmd fw.Command) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+func listenToSystemSignals(cancelFn context.CancelFunc, onInterrupt func()) {
+	signalChan := make(chan os.Signal, 1)
+
+	// listen to signals in order to provide a mechanism for an orderly, graceful shutdown,
+	// but to first allow it a chance to clean up.
+	// SIGINT is the interrupt signal. The terminal sends it to the foreground process when the user presses ctrl-c
+	// SIGTERM is the termination signal. The default behaviour is to terminate the process.
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
+
+	sgn := <-signalChan
+	log.Printf("Handling %s ...\n", sgn)
+
+	cancelFn()
+	onInterrupt()
 }

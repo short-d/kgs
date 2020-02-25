@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"github.com/short-d/app/fw"
 	"github.com/short-d/kgs/dep"
 	"github.com/short-d/kgs/dep/provider"
@@ -19,6 +20,7 @@ type Config struct {
 
 // Start launches kgs service
 func Start(
+	ctx context.Context,
 	config Config,
 	dbConfig fw.DBConfig,
 	dbConnector fw.DBConnector,
@@ -50,5 +52,11 @@ func Start(
 	if err != nil {
 		panic(err)
 	}
-	gRpcService.StartAndWait(config.GRpcAPIPort)
+
+	go func() {
+		<- ctx.Done()
+		gRpcService.Stop()
+	}()
+
+	gRpcService.Start(config.GRpcAPIPort)
 }
