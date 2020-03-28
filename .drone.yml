@@ -46,6 +46,41 @@ steps:
       event:
         - push
 
+  - name: build testing app
+    image: docker
+    commands:
+      - docker build -t kgs-testing:latest -f Dockerfile .
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
+    when:
+      branch:
+        - testing
+      event:
+        - push
+
+  - name: publish testing image to DockerHub
+    image: docker
+    environment:
+      DOCKERHUB_USERNAME:
+        from_secret: DOCKERHUB_USERNAME
+      DOCKERHUB_PASSWORD:
+        from_secret: DOCKERHUB_PASSWORD
+      DOCKERHUB_ORG_ID:
+        from_secret: DOCKERHUB_ORG_ID
+    commands:
+      - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+      - docker tag kgs-testing:latest $DOCKERHUB_ORG_ID/kgs-testing:latest
+      - docker push $DOCKERHUB_ORG_ID/kgs-testing:latest
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
+    when:
+      branch:
+        - testing
+      event:
+        - push
+
   - name: publish staging image to DockerHub
     image: docker
     environment:
