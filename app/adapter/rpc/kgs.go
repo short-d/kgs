@@ -2,9 +2,9 @@ package rpc
 
 import (
 	"context"
+	"github.com/short-d/kgs/app/adapter/rpc/proto"
 
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/short-d/kgs/app/adapter/rpc/proto"
 	"github.com/short-d/kgs/app/usecase"
 )
 
@@ -12,6 +12,10 @@ var _ proto.KeyGenServer = (*KeyGenServer)(nil)
 
 type KeyGenServer struct {
 	useCase usecase.UseCase
+}
+
+func (k KeyGenServer) Test(context.Context, *proto.PopulateKeysRequest) (*empty.Empty, error) {
+	return &empty.Empty{}, nil
 }
 
 func (k KeyGenServer) AllocateKeys(

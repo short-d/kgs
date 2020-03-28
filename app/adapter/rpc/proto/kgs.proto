@@ -1,10 +1,11 @@
 syntax = "proto3";
 
-package rpc;
+package proto;
 
 import "google/protobuf/empty.proto";
 
 service KeyGen {
+    rpc Test (PopulateKeysRequest) returns (google.protobuf.Empty);
     rpc PopulateKeys (PopulateKeysRequest) returns (google.protobuf.Empty);
     rpc AllocateKeys (AllocateKeysRequest) returns (AllocateKeysResponse);
 }
