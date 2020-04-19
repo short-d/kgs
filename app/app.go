@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+
 	"github.com/short-d/app/fw"
 	"github.com/short-d/kgs/dep"
 	"github.com/short-d/kgs/dep/provider"
@@ -54,7 +55,7 @@ func Start(
 	}
 
 	go func() {
-		<- ctx.Done()
+		<-ctx.Done()
 		gRpcService.Stop()
 	}()
 
