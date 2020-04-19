@@ -59,5 +59,5 @@ func Start(
 		gRpcService.Stop()
 	}()
 
-	gRpcService.StartAndWait(config.GRpcAPIPort)
+	gRpcService.Start(config.GRpcAPIPort)
 }
