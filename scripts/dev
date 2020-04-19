@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-go run main.go start
+set -e -x
+
+docker-compose -p kgs_dev -f docker-compose.local.yml up

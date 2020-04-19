@@ -7,12 +7,16 @@ import (
 
 type ServiceEmailAddress string
 
-func NewEmailNotifier(
+func NewEmailNotifierEventListener(
+	logger fw.Logger,
+	template fw.Template,
 	serviceName string,
 	serviceEmailAddress ServiceEmailAddress,
 	emailSender fw.EmailSender,
-) notification.EmailNotifier {
-	return notification.NewEmailNotifier(
+) notification.EmailNotifierEventListener {
+	return notification.NewEmailNotifierEventListener(
+		logger,
+		template,
 		serviceName,
 		string(serviceEmailAddress),
 		emailSender,

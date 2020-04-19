@@ -3,7 +3,9 @@ package main
 import (
 	"strconv"
 
+	"github.com/asaskevich/EventBus"
 	"github.com/short-d/app/fw"
+	"github.com/short-d/app/modern/mdevent"
 	"github.com/short-d/kgs/app"
 	"github.com/short-d/kgs/cmd"
 	"github.com/short-d/kgs/dep"
@@ -59,12 +61,14 @@ func main() {
 		KeyFilePath:         keyFilePath,
 	}
 
+	eventDispatcher := mdevent.NewEventDispatcher(EventBus.New())
 	rootCmd := cmd.NewRootCmd(
 		config,
 		dbConfig,
 		dbConnector,
 		dbMigrationTool,
 		securityPolicy,
+		eventDispatcher,
 	)
 	cmd.Execute(rootCmd)
 }

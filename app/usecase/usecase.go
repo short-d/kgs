@@ -5,44 +5,39 @@ import (
 	"time"
 
 	"github.com/short-d/app/fw"
-	"github.com/short-d/kgs/app/adapter/message"
 	"github.com/short-d/kgs/app/entity"
 	"github.com/short-d/kgs/app/usecase/keys"
 	"github.com/short-d/kgs/app/usecase/notification"
 )
 
 type UseCase struct {
-	logger   fw.Logger
-	template fw.Template
-	producer keys.Producer
-	consumer keys.Consumer
-	notifier notification.Notifier
+	logger          fw.Logger
+	producer        keys.Producer
+	consumer        keys.Consumer
+	eventDispatcher fw.Emitter
 }
 
 func (u UseCase) PopulateKey(keyLength uint, requesterEmail string) {
 	startAt := time.Now()
-	err := u.producer.Produce(keyLength)
+
+	if err := u.producer.Produce(keyLength); err != nil {
+		u.logger.Error(err)
+		return
+	}
+
+	err := u.eventDispatcher.Dispatch(notification.OnKeyPopulatedEvent{
+		TimeElapsed: time.Since(startAt),
+		Requester: entity.Requester{
+			Name:  "",
+			Email: requesterEmail,
+		},
+	})
+
 	if err != nil {
 		u.logger.Error(err)
 		return
 	}
 
-	timeElapsed := time.Since(startAt)
-	msg, err := message.NewKeyGenSucceedMessage(u.template, timeElapsed)
-	if err != nil {
-		u.logger.Error(err)
-		return
-	}
-
-	requester := entity.Requester{
-		Name:  "",
-		Email: requesterEmail,
-	}
-	err = u.notifier.NotifyRequester(msg, requester)
-	if err != nil {
-		u.logger.Error(err)
-		return
-	}
 	u.logger.Info("Finish populating keys")
 }
 
@@ -57,16 +52,14 @@ func (u UseCase) AllocateKeys(maxKeyCount uint) ([]string, error) {
 
 func NewUseCase(
 	logger fw.Logger,
-	template fw.Template,
 	producer keys.Producer,
 	consumer keys.Consumer,
-	notifier notification.Notifier,
+	eventDispatcher fw.Emitter,
 ) UseCase {
 	return UseCase{
-		logger:   logger,
-		template: template,
-		producer: producer,
-		consumer: consumer,
-		notifier: notifier,
+		logger:          logger,
+		producer:        producer,
+		consumer:        consumer,
+		eventDispatcher: eventDispatcher,
 	}
 }

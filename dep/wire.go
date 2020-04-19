@@ -22,9 +22,9 @@ import (
 	"github.com/short-d/kgs/app/adapter/rpc"
 	"github.com/short-d/kgs/app/adapter/rpc/proto"
 	"github.com/short-d/kgs/app/usecase"
+	"github.com/short-d/kgs/app/usecase/dispatcher"
 	"github.com/short-d/kgs/app/usecase/keys"
 	"github.com/short-d/kgs/app/usecase/keys/gen"
-	"github.com/short-d/kgs/app/usecase/notification"
 	"github.com/short-d/kgs/app/usecase/repo"
 	"github.com/short-d/kgs/dep/provider"
 )
@@ -77,6 +77,7 @@ func InitGRpcService(
 	sendGridAPIKey provider.SendGridAPIKey,
 	templateRootDir provider.TemplateRootDir,
 	cacheSize provider.CacheSize,
+	eventDispatcher fw.Dispatcher,
 ) (mdservice.Service, error) {
 	wire.Build(
 		wire.Bind(new(fw.StdOut), new(mdio.StdOut)),
@@ -85,7 +86,6 @@ func InitGRpcService(
 		wire.Bind(new(fw.GRpcAPI), new(rpc.KgsAPI)),
 		wire.Bind(new(fw.EmailSender), new(mdemail.SendGrid)),
 		wire.Bind(new(proto.KeyGenServer), new(rpc.KeyGenServer)),
-		wire.Bind(new(notification.Notifier), new(notification.EmailNotifier)),
 		wire.Bind(new(keys.Producer), new(keys.ProducerPersist)),
 		wire.Bind(new(keys.Consumer), new(keys.ConsumerCached)),
 		wire.Bind(new(gen.Generator), new(gen.Alphabet)),
@@ -93,6 +93,10 @@ func InitGRpcService(
 		wire.Bind(new(repo.AllocatedKey), new(db.AllocatedKeySQL)),
 
 		observabilitySet,
+
+		// event listener subscription
+		dispatcher.NewEventEmitter,
+		provider.NewEmailNotifierEventListener,
 
 		mdio.NewBuildInStdOut,
 		mdruntime.NewBuildIn,
@@ -105,7 +109,6 @@ func InitGRpcService(
 		rpc.NewKgsAPI,
 		usecase.NewUseCase,
 		provider.NewHTML,
-		provider.NewEmailNotifier,
 		keys.NewProducerPersist,
 		provider.NewConsumer,
 		keys.NewConsumerPersist,

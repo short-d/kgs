@@ -1,6 +1,8 @@
 package app
 
 import (
+	"context"
+
 	"github.com/short-d/app/fw"
 	"github.com/short-d/kgs/dep"
 	"github.com/short-d/kgs/dep/provider"
@@ -19,11 +21,13 @@ type Config struct {
 
 // Start launches kgs service
 func Start(
+	ctx context.Context,
 	config Config,
 	dbConfig fw.DBConfig,
 	dbConnector fw.DBConnector,
 	dbMigrationTool fw.DBMigrationTool,
 	securityPolicy fw.SecurityPolicy,
+	eventDispatcher fw.Dispatcher,
 ) {
 	db, err := dbConnector.Connect(dbConfig)
 	if err != nil {
@@ -44,9 +48,16 @@ func Start(
 		provider.SendGridAPIKey(config.SendGridAPIKey),
 		provider.TemplateRootDir(config.TemplateRootDir),
 		provider.CacheSize(config.CacheSize),
+		eventDispatcher,
 	)
 	if err != nil {
 		panic(err)
 	}
-	gRpcService.StartAndWait(config.GRpcAPIPort)
+
+	go func() {
+		<-ctx.Done()
+		gRpcService.Stop()
+	}()
+
+	gRpcService.Start(config.GRpcAPIPort)
 }
