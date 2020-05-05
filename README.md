@@ -3,11 +3,9 @@ Offline Key generation service written in Go
 
 ## Prerequisites
 - go v1.13
-- grpc v1.24.0
+- [grpc](https://grpc.io/docs/quickstart/go/) v1.24.0
 - protoc-gen-go v1.3.2
 - protobuf v3.10.0
-
-gRPC dependencies can be installed by following [this guide](https://grpc.io/docs/quickstart/go/).
 
 ## Getting Started
 ```bash
